@@ -1,0 +1,1 @@
+web: gunicorn lavocat.wsgi --log-file -
