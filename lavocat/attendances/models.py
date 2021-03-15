@@ -11,4 +11,4 @@ class Attendance(ModelBase):
 
 class Attachment(ModelBase):
     attendance = models.ForeignKey(Attendance, on_delete=models.DO_NOTHING)
-    attachment = models.FileField(upload_to='documentos/')
+    file = models.FileField(null=False, upload_to='documentos/')

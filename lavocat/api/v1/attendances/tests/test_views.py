@@ -16,18 +16,19 @@ class AttendanceViewsetGetTest(TestCase, Client):
     def setUp(self) -> None:
         self.resp = self.client.get(reverse('api-v1:attendance-list'))
 
-    def test_get(self):
+    def test_url(self):
         self.assertEqual(self.resp.status_code, status.HTTP_200_OK)
 
 
 class AttendanceViewsetPostTest(TestCase, Client):
     def setUp(self) -> None:
-        self.data = dict(customer_name='Valeu Natalina', document_id=99999999999)
-        attendance = baker.prepare('Attendance', **self.data)
-        self.payload = AttendanceSerializer(attendance).data
+        data = dict(customer_name='Valeu Natalina', document_id=99999999999)
+        attendance = baker.prepare('Attendance', **data)
+        self.serializer = AttendanceSerializer
+        payload = self.serializer(attendance).data
         self.resp = self.client.post(
             reverse('api-v1:attendance-list'),
-            self.payload,
+            payload,
             content_type='application/json',
         )
 
@@ -38,5 +39,13 @@ class AttendanceViewsetPostTest(TestCase, Client):
         self.assertEqual(self.resp.status_code, status.HTTP_201_CREATED)
 
     def test_content_returned(self):
-        expect = {'id': 1, **self.data}
+        expect = self.serializer(Attendance.objects.all().first()).data
         self.assertDictEqual(self.resp.json(), expect)
+
+
+class AttachmentViewsetGetTest(TestCase, Client):
+    def setUp(self) -> None:
+        self.resp = self.client.get(reverse('api-v1:attachment-list'))
+
+    def test_url(self):
+        self.assertEqual(self.resp.status_code, status.HTTP_200_OK)

@@ -25,4 +25,4 @@ class AttachmentModelTest(TestCase):
 
     def test_attributes(self):
         self.assertIsInstance(self.attachment.attendance, Attendance)
-        self.assertIsInstance(self.attachment.attachment, FieldFile)
+        self.assertIsInstance(self.attachment.file, FieldFile)
