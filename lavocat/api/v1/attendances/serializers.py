@@ -6,4 +6,4 @@ from lavocat.attendances.models import Attendance
 class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
-        fields = '__all__'
+        fields = ('id', 'customer_name', 'document_id')

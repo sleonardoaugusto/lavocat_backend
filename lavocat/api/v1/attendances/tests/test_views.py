@@ -22,12 +22,21 @@ class AttendanceViewsetGetTest(TestCase, Client):
 
 class AttendanceViewsetPostTest(TestCase, Client):
     def setUp(self) -> None:
-        data = baker.prepare('Attendance')
-        payload = AttendanceSerializer(data).data
+        self.data = dict(customer_name='Valeu Natalina', document_id=99999999999)
+        attendance = baker.prepare('Attendance', **self.data)
+        self.payload = AttendanceSerializer(attendance).data
         self.resp = self.client.post(
-            reverse('api-v1:attendance-list'), payload, content_type='application/json'
+            reverse('api-v1:attendance-list'),
+            self.payload,
+            content_type='application/json',
         )
 
-    def test_post(self):
-        self.assertEqual(self.resp.status_code, status.HTTP_201_CREATED)
+    def test_must_exist(self):
         self.assertEqual(Attendance.objects.all().count(), 1)
+
+    def test_status_returned(self):
+        self.assertEqual(self.resp.status_code, status.HTTP_201_CREATED)
+
+    def test_content_returned(self):
+        expect = {'id': 1, **self.data}
+        self.assertDictEqual(self.resp.json(), expect)
