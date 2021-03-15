@@ -10,6 +10,7 @@ django-test-without-migrations==0.6
 django_nose==1.4.7
 model_bakery==1.2.1
 Faker==6.6.0
+django-cors-headers==3.7.0
 
 # Heroku
 dj-database-url==0.5.0
