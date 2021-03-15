@@ -2,9 +2,9 @@ from rest_framework import viewsets
 
 from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
-    AttachmentSerializer,
+    AttendanceFileSerializer,
 )
-from lavocat.attendances.models import Attendance, Attachment
+from lavocat.attendances.models import Attendance, AttendanceFile
 
 
 class AttendanceViewset(viewsets.ModelViewSet):
@@ -12,6 +12,6 @@ class AttendanceViewset(viewsets.ModelViewSet):
     serializer_class = AttendanceSerializer
 
 
-class AttachmentViewset(viewsets.ModelViewSet):
-    queryset = Attachment.objects.all()
-    serializer_class = AttachmentSerializer
+class AttendanceFileViewset(viewsets.ModelViewSet):
+    queryset = AttendanceFile.objects.all()
+    serializer_class = AttendanceFileSerializer

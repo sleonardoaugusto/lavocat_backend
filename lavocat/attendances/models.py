@@ -9,6 +9,8 @@ class Attendance(ModelBase):
     document_id = models.IntegerField(validators=[validate_document_id])
 
 
-class Attachment(ModelBase):
-    attendance = models.ForeignKey(Attendance, on_delete=models.DO_NOTHING)
+class AttendanceFile(ModelBase):
+    attendance = models.ForeignKey(
+        Attendance, on_delete=models.DO_NOTHING, related_name='files'
+    )
     file = models.FileField(null=False, upload_to='documentos/')

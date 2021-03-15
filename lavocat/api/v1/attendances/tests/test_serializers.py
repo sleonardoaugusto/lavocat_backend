@@ -3,7 +3,7 @@ from model_bakery import baker
 
 from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
-    AttachmentSerializer,
+    AttendanceFileSerializer,
 )
 
 
@@ -32,10 +32,10 @@ class AttendanceSerializerValidationsTest(TestCase):
         self.assertEqual(exception.code, code)
 
 
-class AttachmentSerializerData(TestCase):
+class AttendanceFileSerializerData(TestCase):
     def setUp(self) -> None:
-        attachment = baker.prepare('Attachment')
-        self.serializer = AttachmentSerializer(attachment)
+        attendance_file = baker.prepare('AttendanceFile')
+        self.serializer = AttendanceFileSerializer(attendance_file)
 
     def test_fields(self):
         self.assertEqual(set(self.serializer.data.keys()), {'id', 'file', 'attendance'})

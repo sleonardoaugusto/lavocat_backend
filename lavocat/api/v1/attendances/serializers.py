@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from lavocat.attendances.models import Attendance, Attachment
+from lavocat.attendances.models import Attendance, AttendanceFile
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
@@ -13,9 +13,9 @@ class AttendanceSerializer(serializers.ModelSerializer):
         )
 
 
-class AttachmentSerializer(serializers.ModelSerializer):
+class AttendanceFileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Attachment
+        model = AttendanceFile
         fields = (
             'id',
             'attendance',

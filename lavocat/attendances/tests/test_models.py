@@ -19,10 +19,10 @@ class AttendanceModelTest(TestCase):
         self.assertEqual(self.attendance.document_id, 45009877899)
 
 
-class AttachmentModelTest(TestCase):
+class AttendanceFileModelTest(TestCase):
     def setUp(self) -> None:
-        self.attachment = baker.make('Attachment')
+        self.attendance_file = baker.make('AttendanceFile')
 
     def test_attributes(self):
-        self.assertIsInstance(self.attachment.attendance, Attendance)
-        self.assertIsInstance(self.attachment.file, FieldFile)
+        self.assertIsInstance(self.attendance_file.attendance, Attendance)
+        self.assertIsInstance(self.attendance_file.file, FieldFile)

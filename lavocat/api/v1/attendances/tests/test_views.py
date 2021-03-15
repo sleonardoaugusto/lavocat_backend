@@ -43,9 +43,9 @@ class AttendanceViewsetPostTest(TestCase, Client):
         self.assertDictEqual(self.resp.json(), expect)
 
 
-class AttachmentViewsetGetTest(TestCase, Client):
+class AttendanceFileViewsetGetTest(TestCase, Client):
     def setUp(self) -> None:
-        self.resp = self.client.get(reverse('api-v1:attachment-list'))
+        self.resp = self.client.get(reverse('api-v1:attendancefile-list'))
 
     def test_url(self):
         self.assertEqual(self.resp.status_code, status.HTTP_200_OK)
