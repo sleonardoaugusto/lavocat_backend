@@ -14,7 +14,8 @@ class AttendanceSerializerData(TestCase):
 
     def test_data(self):
         self.assertEqual(
-            set(self.serializer.data.keys()), {'id', 'customer_name', 'document_id'}
+            set(self.serializer.data.keys()),
+            {'id', 'customer_name', 'document_id', 'files'},
         )
 
 
