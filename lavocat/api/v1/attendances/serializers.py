@@ -14,7 +14,7 @@ class AttendanceFileSerializer(serializers.ModelSerializer):
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
-    files = AttendanceFileSerializer(many=True, read_only=True, required=False)
+    files = AttendanceFileSerializer(many=True, read_only=True)
 
     class Meta:
         model = Attendance
