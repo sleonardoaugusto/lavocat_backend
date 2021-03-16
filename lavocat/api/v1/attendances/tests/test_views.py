@@ -1,4 +1,5 @@
-from datetime import datetime
+from pathlib import Path, PurePath
+from time import time
 from unittest import mock
 
 from django.core.files import File
@@ -13,6 +14,7 @@ from lavocat.api.v1.attendances.serializers import (
     AttendanceFileSerializer,
 )
 from lavocat.attendances.models import Attendance, AttendanceFile
+from lavocat.settings import BASE_DIR
 
 
 class Client:
@@ -60,7 +62,6 @@ class AttendanceFileViewsetGetTest(TestCase, Client):
 
 class AttendanceFileViewsetPostTest(TestCase, Client):
     def setUp(self) -> None:
-        self.datenow = datetime.now()
         self.serializer = AttendanceFileSerializer
         attendance = baker.make('Attendance')
         payload = {'attendance': attendance.pk, 'file': self.mock_file()}
@@ -70,17 +71,12 @@ class AttendanceFileViewsetPostTest(TestCase, Client):
         )
 
     def tearDown(self) -> None:
-        # dirname = 'documentos'
-        # print(Path(__file__), '####')
-        # fname = Path(self.fname)
-        # Path(PurePath(dirname).joinpath(fname)).unlink()
-        ...
+        def delete_file():
+            fdir = 'documentos'
+            fname = Path(self.fname)
+            Path(PurePath(BASE_DIR).joinpath(fdir).joinpath(fname)).unlink()
 
-    def mock_file(self):
-        self.fname = datetime.isoformat(datetime.now())
-        file_mock = mock.MagicMock(spec=File)
-        file_mock.name = self.fname
-        return file_mock
+        delete_file()
 
     def test_must_exist(self):
         self.assertEqual(AttendanceFile.objects.all().count(), 1)
@@ -90,10 +86,19 @@ class AttendanceFileViewsetPostTest(TestCase, Client):
 
     def test_content_returned(self):
         record = AttendanceFile.objects.all().first()
-        print(dir(record.file))
         expect = {
             'id': record.pk,
             'attendance': record.attendance.pk,
-            'file': record.file,
+            'file': self._get_file_url(record.file.url),
         }
         self.assertDictEqual(self.resp.json(), expect)
+
+    def mock_file(self):
+        self.fname = f'{int(str(time()).replace(".", ""))}.doc'
+        file_mock = mock.Mock(spec=File)
+        file_mock.name = self.fname
+        return file_mock
+
+    @staticmethod
+    def _get_file_url(fpath):
+        return f'http://testserver{fpath}'
