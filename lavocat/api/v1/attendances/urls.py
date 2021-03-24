@@ -13,5 +13,9 @@ router.register('attendance-files', AttendanceFileViewset)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('statuses', AttendanceStatusesView.as_view(), name='attendance-statuses'),
+    path(
+        'attendance-statuses/',
+        AttendanceStatusesView.as_view(),
+        name='attendance-statuses',
+    ),
 ]

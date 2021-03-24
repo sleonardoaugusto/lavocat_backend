@@ -8,6 +8,7 @@ class AttendanceStatus(models.IntegerChoices):
     PENDING_DOCS = 1, 'Documentação Pendente'
     PARTIAL_DOCS = 2, 'Documentação Parcial'
     TO_CONTACT = 3, 'À Contatar'
+    DONE = 4, 'Concluído'
 
 
 class Attendance(ModelBase):
