@@ -53,6 +53,7 @@ class AttendanceViewsetPostTest(TestCase, Client):
 
     def test_content_returned(self):
         expect = self.serializer(Attendance.objects.all().first()).data
+
         self.assertDictEqual(self.resp.json(), expect)
 
 
@@ -69,10 +70,7 @@ class AttendanceFileViewsetPostTest(TestCase, Client):
         self.serializer = AttendanceFileSerializer
         attendance = baker.make('Attendance')
         payload = {'attendance': attendance.pk, 'file': self.mock_file()}
-        self.resp = self.client.post(
-            reverse('api-v1:attendancefile-list'),
-            payload,
-        )
+        self.resp = self.client.post(reverse('api-v1:attendancefile-list'), payload)
 
     def tearDown(self) -> None:
         def delete_file():
@@ -95,6 +93,7 @@ class AttendanceFileViewsetPostTest(TestCase, Client):
             'attendance': record.attendance.pk,
             'file': self._get_file_url(record.file.url),
         }
+
         self.assertDictEqual(self.resp.json(), expect)
 
     def mock_file(self):
@@ -122,4 +121,4 @@ class AttendanceStatusesViewTest(TestCase):
             'À Contatar': 3,
         }
 
-        self.assertEqual(self.resp.json(), expect)
+        self.assertDictEqual(self.resp.json(), expect)
