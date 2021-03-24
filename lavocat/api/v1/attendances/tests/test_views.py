@@ -14,7 +14,7 @@ from lavocat.api.v1.attendances.serializers import (
     AttendanceFileSerializer,
 )
 from lavocat.attendances.models import Attendance, AttendanceFile
-from lavocat.settings import BASE_DIR
+from lavocat.settings import MEDIA_ROOT
 
 
 class Client:
@@ -74,7 +74,7 @@ class AttendanceFileViewsetPostTest(TestCase, Client):
         def delete_file():
             fdir = 'documentos'
             fname = Path(self.fname)
-            Path(PurePath(BASE_DIR).joinpath(fdir).joinpath(fname)).unlink()
+            Path(PurePath(MEDIA_ROOT).joinpath(fdir).joinpath(fname)).unlink()
 
         delete_file()
 
