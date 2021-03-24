@@ -13,7 +13,7 @@ from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
     AttendanceFileSerializer,
 )
-from lavocat.attendances.models import Attendance, AttendanceFile
+from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
 from lavocat.settings import MEDIA_ROOT
 
 
@@ -31,7 +31,11 @@ class AttendanceViewsetGetTest(TestCase, Client):
 
 class AttendanceViewsetPostTest(TestCase, Client):
     def setUp(self) -> None:
-        data = dict(customer_name='Valeu Natalina', document_id=99999999999)
+        data = dict(
+            customer_name='Valeu Natalina',
+            document_id=99999999999,
+            status=AttendanceStatus.PENDING_DOCS,
+        )
         attendance = baker.prepare('Attendance', **data)
         self.serializer = AttendanceSerializer
         payload = self.serializer(attendance).data
@@ -102,3 +106,20 @@ class AttendanceFileViewsetPostTest(TestCase, Client):
     @staticmethod
     def _get_file_url(fpath):
         return f'http://testserver{fpath}'
+
+
+class AttendanceStatusesViewTest(TestCase):
+    def setUp(self) -> None:
+        self.resp = self.client.get(reverse('api-v1:attendance-statuses'))
+
+    def test_get(self):
+        self.assertEqual(self.resp.status_code, status.HTTP_200_OK)
+
+    def test_data(self):
+        expect = {
+            'Documentação Pendente': 1,
+            'Documentação Parcial': 2,
+            'À Contatar': 3,
+        }
+
+        self.assertEqual(self.resp.json(), expect)

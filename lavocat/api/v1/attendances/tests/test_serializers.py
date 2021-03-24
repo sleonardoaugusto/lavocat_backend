@@ -12,10 +12,10 @@ class AttendanceSerializerData(TestCase):
         attendance = baker.prepare('Attendance')
         self.serializer = AttendanceSerializer(attendance)
 
-    def test_data(self):
+    def test_attributes(self):
         self.assertEqual(
             set(self.serializer.data.keys()),
-            {'id', 'customer_name', 'document_id', 'files'},
+            {'id', 'customer_name', 'document_id', 'files', 'status'},
         )
 
 
