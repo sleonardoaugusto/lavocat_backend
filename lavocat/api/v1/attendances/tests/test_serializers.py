@@ -9,14 +9,22 @@ from lavocat.api.v1.attendances.serializers import (
 
 class AttendanceSerializerData(TestCase):
     def setUp(self) -> None:
-        attendance = baker.prepare('Attendance')
-        self.serializer = AttendanceSerializer(attendance)
+        self.attendance = baker.make('Attendance', _fill_optional=True)
+        self.files = baker.make('AttendanceFile', attendance=self.attendance)
+        self.serializer = AttendanceSerializer(self.attendance)
 
-    def test_attributes(self):
-        self.assertEqual(
-            set(self.serializer.data.keys()),
-            {'id', 'customer_name', 'document_id', 'files', 'status'},
+    def test_fields(self):
+        values = (
+            ('id', self.attendance.pk),
+            ('customer_name', self.attendance.customer_name),
+            ('document_id', self.attendance.document_id),
+            ('status', self.attendance.status),
+            ('resume', self.attendance.resume),
         )
+
+        for attr, value in values:
+            with self.subTest():
+                self.assertEqual(self.serializer.data[attr], value)
 
 
 class AttendanceSerializerValidationsTest(TestCase):

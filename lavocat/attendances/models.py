@@ -15,6 +15,7 @@ class Attendance(ModelBase):
     customer_name = models.CharField(max_length=128)
     document_id = models.IntegerField(validators=[validate_document_id])
     status = models.PositiveSmallIntegerField(choices=AttendanceStatus.choices)
+    resume = models.TextField(null=True)
 
 
 class AttendanceFile(ModelBase):

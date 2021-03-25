@@ -24,4 +24,5 @@ class AttendanceSerializer(serializers.ModelSerializer):
             'document_id',
             'files',
             'status',
+            'resume',
         )

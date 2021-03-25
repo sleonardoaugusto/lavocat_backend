@@ -119,6 +119,7 @@ class AttendanceStatusesViewTest(TestCase):
             'Documentação Pendente': 1,
             'Documentação Parcial': 2,
             'À Contatar': 3,
+            'Concluído': 4,
         }
 
         self.assertDictEqual(self.resp.json(), expect)
