@@ -1,16 +1,24 @@
+from pathlib import PurePath
+
 from rest_framework import serializers
 
 from lavocat.attendances.models import Attendance, AttendanceFile
 
 
 class AttendanceFileSerializer(serializers.ModelSerializer):
+    filename = serializers.SerializerMethodField()
+
     class Meta:
         model = AttendanceFile
         fields = (
             'id',
             'attendance',
             'file',
+            'filename',
         )
+
+    def get_filename(self, obj):
+        return PurePath(obj.file.name).name
 
 
 class AttendanceSerializer(serializers.ModelSerializer):

@@ -3,6 +3,7 @@ from time import time
 from unittest import mock
 
 from django.core.files import File
+from django.core.files.storage import FileSystemStorage
 from django.test import TestCase
 from model_bakery import baker
 from rest_framework import status
@@ -14,7 +15,6 @@ from lavocat.api.v1.attendances.serializers import (
     AttendanceFileSerializer,
 )
 from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
-from lavocat.settings import MEDIA_ROOT
 
 
 class Client:
@@ -67,18 +67,21 @@ class AttendanceFileViewsetGetTest(TestCase, Client):
 
 class AttendanceFileViewsetPostTest(TestCase, Client):
     def setUp(self) -> None:
+        AttendanceFile.file.field.storage = FileSystemStorage()
         self.serializer = AttendanceFileSerializer
         attendance = baker.make('Attendance')
         payload = {'attendance': attendance.pk, 'file': self.mock_file()}
         self.resp = self.client.post(reverse('api-v1:attendancefile-list'), payload)
 
     def tearDown(self) -> None:
-        def delete_file():
-            fdir = 'documentos'
-            fname = Path(self.fname)
-            Path(PurePath(MEDIA_ROOT).joinpath(fdir).joinpath(fname)).unlink()
+        af = AttendanceFile.objects.all().first()
+        path = Path(af.file.path)
 
-        delete_file()
+        def delete_file_and_dir():
+            path.unlink()
+            path.parent.rmdir()
+
+        delete_file_and_dir()
 
     def test_must_exist(self):
         self.assertEqual(AttendanceFile.objects.all().count(), 1)
@@ -92,6 +95,7 @@ class AttendanceFileViewsetPostTest(TestCase, Client):
             'id': record.pk,
             'attendance': record.attendance.pk,
             'file': self._get_file_url(record.file.url),
+            'filename': PurePath(record.file.name).name,
         }
 
         self.assertDictEqual(self.resp.json(), expect)

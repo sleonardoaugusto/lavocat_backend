@@ -18,8 +18,13 @@ class Attendance(ModelBase):
     resume = models.TextField(null=True)
 
 
+def upload_to(instance, fname):
+    document_id = instance.attendance.document_id
+    return f'documentos/{document_id}/{fname}'
+
+
 class AttendanceFile(ModelBase):
     attendance = models.ForeignKey(
         Attendance, on_delete=models.DO_NOTHING, related_name='files'
     )
-    file = models.FileField(null=False, upload_to='documentos/')
+    file = models.FileField(null=False, upload_to=upload_to)

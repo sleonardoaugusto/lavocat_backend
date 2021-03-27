@@ -1,3 +1,6 @@
+from pathlib import Path, PurePath
+
+from django.core.files.storage import FileSystemStorage
 from django.test import TestCase
 from model_bakery import baker
 
@@ -5,6 +8,7 @@ from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
     AttendanceFileSerializer,
 )
+from lavocat.attendances.models import AttendanceFile
 
 
 class AttendanceSerializerData(TestCase):
@@ -46,8 +50,29 @@ class AttendanceSerializerValidationsTest(TestCase):
 
 class AttendanceFileSerializerData(TestCase):
     def setUp(self) -> None:
-        attendance_file = baker.prepare('AttendanceFile')
-        self.serializer = AttendanceFileSerializer(attendance_file)
+        AttendanceFile.file.field.storage = FileSystemStorage()
+        self.record = baker.make('AttendanceFile', _create_files=True)
+        self.serializer_data = AttendanceFileSerializer(self.record).data
 
-    def test_fields(self):
-        self.assertEqual(set(self.serializer.data.keys()), {'id', 'file', 'attendance'})
+    def tearDown(self) -> None:
+        af = AttendanceFile.objects.all().first()
+        path = Path(af.file.path)
+
+        def delete_file_and_dir():
+            path.unlink()
+            path.parent.rmdir()
+
+        delete_file_and_dir()
+
+    def test_field_values(self):
+        self.assertEqual(
+            set(self.serializer_data.keys()), {'id', 'file', 'attendance', 'filename'}
+        )
+        self.assertEqual(self.serializer_data['file'], f'/{self.record.file.name}')
+        self.assertEqual(
+            self.serializer_data['filename'], self.get_file_name(self.record)
+        )
+
+    @staticmethod
+    def get_file_name(record):
+        return PurePath(record.file.name).name
