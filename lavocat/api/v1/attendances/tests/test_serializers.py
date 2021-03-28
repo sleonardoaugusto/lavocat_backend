@@ -33,7 +33,7 @@ class AttendanceSerializerData(TestCase):
 
 class AttendanceSerializerValidationsTest(TestCase):
     def test_document_id_length(self):
-        data = dict(customer_name='Valeu Natalina', document_id=9999999999)
+        data = dict(customer_name='Valeu Natalina', document_id='9999999999')
         serializer = AttendanceSerializer(data=data)
 
         self.assertValidationErrorCode(serializer, 'document_id', 'length')
