@@ -126,6 +126,9 @@ USE_L10N = True
 USE_TZ = True
 
 
+STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = config("MEDIA_ROOT", default=Path.joinpath(BASE_DIR, "media"))
+
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
@@ -134,12 +137,9 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 
-AWS_LOCATION = 'static'
+AWS_STATIC_LOCATION = 'static'
+STATICFILES_STORAGE = 'storage_backends.StaticStorage'
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
 
-STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
-MEDIA_ROOT = config("MEDIA_ROOT", default=Path.joinpath(BASE_DIR, "media"))
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-DEFAULT_FILE_STORAGE = 'storage_backends.MediaStorage'
+AWS_MEDIA_LOCATION = 'media'
+FILE_STORAGE = 'mysite.storage_backends.MediaStorage'

@@ -2,6 +2,7 @@ from django.db import models
 
 from lavocat.attendances.validators import validate_document_id
 from lavocat.core.models import ModelBase
+from storage_backends import MediaStorage
 
 
 class AttendanceStatus(models.IntegerChoices):
@@ -27,4 +28,4 @@ class AttendanceFile(ModelBase):
     attendance = models.ForeignKey(
         Attendance, on_delete=models.DO_NOTHING, related_name='files'
     )
-    file = models.FileField(null=False, upload_to=upload_to)
+    file = models.FileField(null=False, upload_to=upload_to, storage=MediaStorage())
