@@ -120,9 +120,9 @@ class AttendanceStatusesViewTest(TestCase):
 
     def test_data(self):
         expect = {
-            'Documentação Pendente': 1,
-            'Documentação Parcial': 2,
-            'À Contatar': 3,
+            'Documentação pendente': 1,
+            'Em andamento': 2,
+            'À contatar': 3,
             'Concluído': 4,
         }
 
