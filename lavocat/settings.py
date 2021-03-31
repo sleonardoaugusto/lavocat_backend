@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'test_without_migrations',
     'rest_framework',
+    'django_filters',
     'lavocat.core',
     'lavocat.attendances',
     'storages',
@@ -62,6 +63,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
 
 ROOT_URLCONF = 'lavocat.urls'
 

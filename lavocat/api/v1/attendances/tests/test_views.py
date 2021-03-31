@@ -57,6 +57,49 @@ class AttendanceViewsetPostTest(TestCase, Client):
         self.assertDictEqual(self.resp.json(), expect)
 
 
+class AttendanceViewsetQuerystringTest(TestCase, Client):
+    def setUp(self) -> None:
+        params = [
+            dict(
+                customer_name='Maria',
+                document_id='99999999999',
+                status=AttendanceStatus.PENDING_DOCS,
+            ),
+            dict(
+                customer_name='Mara',
+                document_id='11199999999',
+                status=AttendanceStatus.DONE,
+            ),
+            dict(
+                customer_name='Faria',
+                document_id='11999999999',
+                status=AttendanceStatus.TO_CONTACT,
+            ),
+        ]
+        [baker.make('Attendance', **p) for p in params]
+
+    def test_name_filter(self):
+        qs = '?customer_name=ara'
+        resp = self.client.get(f"{reverse('api-v1:attendance-list')}{qs}")
+        data = resp.json()
+
+        self.assertEqual(len(data), 1)
+
+    def test_document_filter(self):
+        qs = '?document_id=111'
+        resp = self.client.get(f"{reverse('api-v1:attendance-list')}{qs}")
+        data = resp.json()
+
+        self.assertEqual(len(data), 1)
+
+    def test_status_filter(self):
+        qs = f'?status={AttendanceStatus.DONE}&status={AttendanceStatus.PENDING_DOCS}'
+        resp = self.client.get(f"{reverse('api-v1:attendance-list')}{qs}")
+        data = resp.json()
+
+        self.assertEqual(len(data), 2)
+
+
 class AttendanceFileViewsetGetTest(TestCase, Client):
     def setUp(self) -> None:
         self.resp = self.client.get(reverse('api-v1:attendancefile-list'))
