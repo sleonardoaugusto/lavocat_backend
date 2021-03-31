@@ -8,7 +8,7 @@ from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
     AttendanceFileSerializer,
 )
-from lavocat.attendances.models import AttendanceFile
+from lavocat.attendances.models import AttendanceFile, AttendanceStatus
 
 
 class AttendanceSerializerData(TestCase):
@@ -18,11 +18,27 @@ class AttendanceSerializerData(TestCase):
         self.serializer = AttendanceSerializer(self.attendance)
 
     def test_fields(self):
+        data = self.serializer.data
+        self.assertEqual(
+            set(data.keys()),
+            {
+                'id',
+                'customer_name',
+                'document_id',
+                'files',
+                'status',
+                'status_label',
+                'resume',
+            },
+        )
+
+    def test_values(self):
         values = (
             ('id', self.attendance.pk),
             ('customer_name', self.attendance.customer_name),
             ('document_id', self.attendance.document_id),
             ('status', self.attendance.status),
+            ('status_label', AttendanceStatus(self.attendance.status).label),
             ('resume', self.attendance.resume),
         )
 

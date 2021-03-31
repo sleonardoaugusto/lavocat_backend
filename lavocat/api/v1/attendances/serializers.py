@@ -2,7 +2,7 @@ from pathlib import PurePath
 
 from rest_framework import serializers
 
-from lavocat.attendances.models import Attendance, AttendanceFile
+from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
 
 
 class AttendanceFileSerializer(serializers.ModelSerializer):
@@ -23,6 +23,7 @@ class AttendanceFileSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     files = AttendanceFileSerializer(many=True, read_only=True)
+    status_label = serializers.SerializerMethodField()
 
     class Meta:
         model = Attendance
@@ -32,5 +33,9 @@ class AttendanceSerializer(serializers.ModelSerializer):
             'document_id',
             'files',
             'status',
+            'status_label',
             'resume',
         )
+
+    def get_status_label(self, obj):
+        return AttendanceStatus(obj.status).label
