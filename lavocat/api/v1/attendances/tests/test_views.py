@@ -1,10 +1,10 @@
-from pathlib import Path, PurePath
+import json
+from pathlib import PurePath
 from time import time
 from unittest import mock
 
+import pytest
 from django.core.files import File
-from django.core.files.storage import FileSystemStorage
-from django.test import TestCase
 from model_bakery import baker
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -12,7 +12,6 @@ from rest_framework.test import APIClient
 
 from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
-    AttendanceFileSerializer,
 )
 from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
 
@@ -21,44 +20,45 @@ class Client:
     client = APIClient()
 
 
-class AttendanceViewsetGetTest(TestCase, Client):
-    def setUp(self) -> None:
-        self.resp = self.client.get(reverse('api-v1:attendance-list'))
+@pytest.mark.django_db
+class TestAttendanceViewsetGet:
+    def test_get(self, client):
+        resp = client.get(reverse('api-v1:attendance-list'))
+        assert resp.status_code, status.HTTP_200_OK
 
-    def test_url(self):
-        self.assertEqual(self.resp.status_code, status.HTTP_200_OK)
 
-
-class AttendanceViewsetPostTest(TestCase, Client):
-    def setUp(self) -> None:
-        data = dict(
+@pytest.mark.django_db
+class TestAttendanceViewsetPost:
+    @pytest.fixture(autouse=True)
+    def response(self, client):
+        attendance = baker.prepare(
+            'Attendance',
             customer_name='Valeu Natalina',
             document_id=99999999999,
             status=AttendanceStatus.PENDING_DOCS,
         )
-        attendance = baker.prepare('Attendance', **data)
-        self.serializer = AttendanceSerializer
-        payload = self.serializer(attendance).data
-        self.resp = self.client.post(
+        payload = AttendanceSerializer(attendance).data
+        return client.post(
             reverse('api-v1:attendance-list'),
-            payload,
+            json.dumps(payload),
             content_type='application/json',
         )
 
-    def test_must_exist(self):
-        self.assertEqual(Attendance.objects.all().count(), 1)
+    def test_must_exist(self, response):
+        assert Attendance.objects.all().count() == 1
 
-    def test_status_returned(self):
-        self.assertEqual(self.resp.status_code, status.HTTP_201_CREATED)
+    def test_status_returned(self, response):
+        assert response.status_code == status.HTTP_201_CREATED
 
-    def test_content_returned(self):
-        expect = self.serializer(Attendance.objects.all().first()).data
+    def test_content_returned(self, response):
+        expect = AttendanceSerializer(Attendance.objects.all().first()).data
+        assert response.json() == expect
 
-        self.assertDictEqual(self.resp.json(), expect)
 
-
-class AttendanceViewsetQuerystringTest(TestCase, Client):
-    def setUp(self) -> None:
+@pytest.mark.django_db
+class TestAttendanceViewsetQuerystring:
+    @pytest.fixture(autouse=True)
+    def factory(self):
         params = [
             dict(
                 customer_name='Maria',
@@ -78,70 +78,45 @@ class AttendanceViewsetQuerystringTest(TestCase, Client):
         ]
         [baker.make('Attendance', **p) for p in params]
 
-    def test_name_filter(self):
+    def test_name_filter(self, client):
         qs = '?customer_name=ara'
-        resp = self.client.get(f"{reverse('api-v1:attendance-list')}{qs}")
+        resp = client.get(f"{reverse('api-v1:attendance-list')}{qs}")
         data = resp.json()
+        assert len(data) == 1
 
-        self.assertEqual(len(data), 1)
-
-    def test_document_filter(self):
+    def test_document_filter(self, client):
         qs = '?document_id=111'
-        resp = self.client.get(f"{reverse('api-v1:attendance-list')}{qs}")
+        resp = client.get(f"{reverse('api-v1:attendance-list')}{qs}")
         data = resp.json()
+        assert len(data) == 1
 
-        self.assertEqual(len(data), 1)
-
-    def test_status_filter(self):
+    def test_status_filter(self, client):
         qs = f'?status={AttendanceStatus.DONE}&status={AttendanceStatus.PENDING_DOCS}'
-        resp = self.client.get(f"{reverse('api-v1:attendance-list')}{qs}")
+        resp = client.get(f"{reverse('api-v1:attendance-list')}{qs}")
         data = resp.json()
-
-        self.assertEqual(len(data), 2)
-
-
-class AttendanceFileViewsetGetTest(TestCase, Client):
-    def setUp(self) -> None:
-        self.resp = self.client.get(reverse('api-v1:attendancefile-list'))
-
-    def test_url(self):
-        self.assertEqual(self.resp.status_code, status.HTTP_200_OK)
+        assert len(data) == 2
 
 
-class AttendanceFileViewsetPostTest(TestCase, Client):
-    def setUp(self) -> None:
-        AttendanceFile.file.field.storage = FileSystemStorage()
-        self.serializer = AttendanceFileSerializer
+@pytest.mark.django_db
+class TestAttendanceFileViewsetGet:
+    def test_url(self, client):
+        response = client.get(reverse('api-v1:attendancefile-list'))
+        assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.django_db
+class TestAttendanceFileViewsetPost:
+    @pytest.fixture(autouse=True)
+    def response(self, client, delete_file):
         attendance = baker.make('Attendance')
         payload = {'attendance': attendance.pk, 'file': self.mock_file()}
-        self.resp = self.client.post(reverse('api-v1:attendancefile-list'), payload)
-
-    def tearDown(self) -> None:
-        af = AttendanceFile.objects.all().first()
-        path = Path(af.file.path)
-
-        def delete_file_and_dir():
-            path.unlink()
-            path.parent.rmdir()
-
-        delete_file_and_dir()
+        return client.post(reverse('api-v1:attendancefile-list'), payload)
 
     def test_must_exist(self):
-        self.assertEqual(AttendanceFile.objects.all().count(), 1)
+        assert AttendanceFile.objects.all().count() == 1
 
-    def test_status_returned(self):
-        self.assertEqual(self.resp.status_code, status.HTTP_201_CREATED)
-
-    def test_content_returned(self):
-        record = AttendanceFile.objects.all().first()
-        expect = {
-            'id': record.pk,
-            'attendance': record.attendance.pk,
-            'file': self._get_file_url(record.file.url),
-            'filename': PurePath(record.file.name).name,
-        }
-
-        self.assertDictEqual(self.resp.json(), expect)
+    def test_status_returned(self, response):
+        assert response.status_code == status.HTTP_201_CREATED
 
     def mock_file(self):
         self.fname = f'{int(str(time()).replace(".", ""))}.doc'
@@ -149,24 +124,32 @@ class AttendanceFileViewsetPostTest(TestCase, Client):
         file_mock.name = self.fname
         return file_mock
 
+    def test_content_returned(self, response):
+        record = AttendanceFile.objects.all().first()
+        expect = {
+            'id': record.pk,
+            'attendance': record.attendance.pk,
+            'file': self._get_file_url(record.file.url),
+            'filename': PurePath(record.file.name).name,
+        }
+        assert response.json() == expect
+
     @staticmethod
     def _get_file_url(fpath):
         return f'http://testserver{fpath}'
 
 
-class AttendanceStatusesViewTest(TestCase):
-    def setUp(self) -> None:
-        self.resp = self.client.get(reverse('api-v1:attendance-statuses'))
+@pytest.mark.django_db
+class TestAttendanceStatusesView:
+    @pytest.fixture
+    def response(self, client):
+        return client.get(reverse('api-v1:attendance-statuses'))
 
-    def test_get(self):
-        self.assertEqual(self.resp.status_code, status.HTTP_200_OK)
-
-    def test_data(self):
+    def test_content(self, response):
         expect = {
             'Documentação pendente': 1,
             'Em andamento': 2,
             'À contatar': 3,
             'Concluído': 4,
         }
-
-        self.assertDictEqual(self.resp.json(), expect)
+        assert response.json() == expect

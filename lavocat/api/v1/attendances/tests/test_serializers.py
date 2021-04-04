@@ -1,92 +1,86 @@
-from pathlib import Path, PurePath
+from pathlib import PurePath
 
+import pytest
 from django.core.files.storage import FileSystemStorage
-from django.test import TestCase
 from model_bakery import baker
 
 from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
     AttendanceFileSerializer,
 )
-from lavocat.attendances.models import AttendanceFile, AttendanceStatus
+from lavocat.attendances.models import AttendanceStatus, AttendanceFile
+from lavocat.custom_assertions import assert_validation_error_code
 
 
-class AttendanceSerializerData(TestCase):
-    def setUp(self) -> None:
-        self.attendance = baker.make('Attendance', _fill_optional=True)
-        self.files = baker.make('AttendanceFile', attendance=self.attendance)
-        self.serializer = AttendanceSerializer(self.attendance)
+@pytest.fixture
+def attendance():
+    return baker.make('Attendance', _fill_optional=True)
 
-    def test_fields(self):
-        data = self.serializer.data
-        self.assertEqual(
-            set(data.keys()),
-            {
-                'id',
-                'customer_name',
-                'document_id',
-                'files',
-                'status',
-                'status_label',
-                'resume',
-            },
-        )
 
-    def test_values(self):
+@pytest.fixture
+def attendance_file(attendance, delete_file):
+    AttendanceFile.file.field.storage = FileSystemStorage()
+    yield baker.make('AttendanceFile', _create_files=True, attendance=attendance)
+
+
+@pytest.fixture
+def attendance_serializer(attendance_file):
+    return AttendanceSerializer(attendance_file.attendance)
+
+
+@pytest.fixture
+def attendance_file_serializer(attendance_file):
+    return AttendanceFileSerializer(attendance_file)
+
+
+@pytest.mark.django_db
+class TestAttendanceSerializer:
+    def test_fields(self, attendance_serializer):
+        data = attendance_serializer.data
+        assert set(data.keys()) == {
+            'id',
+            'customer_name',
+            'document_id',
+            'files',
+            'status',
+            'status_label',
+            'resume',
+        }
+
+    def test_values(self, attendance_serializer, attendance):
         values = (
-            ('id', self.attendance.pk),
-            ('customer_name', self.attendance.customer_name),
-            ('document_id', self.attendance.document_id),
-            ('status', self.attendance.status),
-            ('status_label', AttendanceStatus(self.attendance.status).label),
-            ('resume', self.attendance.resume),
+            ('id', attendance.pk),
+            ('customer_name', attendance.customer_name),
+            ('document_id', attendance.document_id),
+            ('status', attendance.status),
+            ('status_label', AttendanceStatus(attendance.status).label),
+            ('resume', attendance.resume),
         )
-
         for attr, value in values:
-            with self.subTest():
-                self.assertEqual(self.serializer.data[attr], value)
+            assert attendance_serializer.data[attr] == value
 
-
-class AttendanceSerializerValidationsTest(TestCase):
     def test_document_id_length(self):
         data = dict(customer_name='Valeu Natalina', document_id='9999999999')
         serializer = AttendanceSerializer(data=data)
-
-        self.assertValidationErrorCode(serializer, 'document_id', 'length')
-
-    def assertValidationErrorCode(self, serializer, field, code):
-        serializer.is_valid()
-
-        errors = serializer.errors
-        errors_list = errors[field]
-        exception = errors_list[0]
-
-        self.assertEqual(exception.code, code)
+        assert_validation_error_code(serializer, 'document_id', 'length')
 
 
-class AttendanceFileSerializerData(TestCase):
-    def setUp(self) -> None:
-        AttendanceFile.file.field.storage = FileSystemStorage()
-        self.record = baker.make('AttendanceFile', _create_files=True)
-        self.serializer_data = AttendanceFileSerializer(self.record).data
+@pytest.mark.django_db
+class TestAttendanceFileSerializer:
+    def test_fields(self, attendance_file_serializer):
+        assert set(attendance_file_serializer.data.keys()) == {
+            'id',
+            'file',
+            'attendance',
+            'filename',
+        }
 
-    def tearDown(self) -> None:
-        af = AttendanceFile.objects.all().first()
-        path = Path(af.file.path)
-
-        def delete_file_and_dir():
-            path.unlink()
-            path.parent.rmdir()
-
-        delete_file_and_dir()
-
-    def test_field_values(self):
-        self.assertEqual(
-            set(self.serializer_data.keys()), {'id', 'file', 'attendance', 'filename'}
+    def test_values(self, attendance_file, attendance_file_serializer):
+        assert (
+            attendance_file_serializer.data['file'] == f'/{attendance_file.file.name}'
         )
-        self.assertEqual(self.serializer_data['file'], f'/{self.record.file.name}')
-        self.assertEqual(
-            self.serializer_data['filename'], self.get_file_name(self.record)
+        assert attendance_file_serializer.data['filename'] == self.get_file_name(
+            attendance_file
         )
 
     @staticmethod
