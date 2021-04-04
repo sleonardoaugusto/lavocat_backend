@@ -1,8 +1,9 @@
 import pytest
+from django.core.files.storage import FileSystemStorage
 from django.db.models.fields.files import FieldFile
 from model_bakery import baker
 
-from lavocat.attendances.models import Attendance, AttendanceStatus
+from lavocat.attendances.models import Attendance, AttendanceStatus, AttendanceFile
 
 
 @pytest.mark.django_db
@@ -19,6 +20,14 @@ class TestAttendanceModel:
 
 @pytest.mark.django_db
 class TestAttendanceFileModel:
+    @pytest.fixture(autouse=True)
+    def record(self, delete_file):
+        AttendanceFile.file.field.storage = FileSystemStorage()
+        return baker.make('AttendanceFile', _create_files=True)
+
+    def test_must_exist(self):
+        assert Attendance.objects.all().count() == 1
+
     def test_attributes(self):
         record = baker.make('AttendanceFile')
         assert isinstance(record.attendance, Attendance)
