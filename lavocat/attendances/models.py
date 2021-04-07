@@ -6,9 +6,9 @@ from storage_backends import MediaStorage
 
 
 class AttendanceStatus(models.IntegerChoices):
-    PENDING_DOCS = 1, 'Documentação Pendente'
-    PARTIAL_DOCS = 2, 'Documentação Parcial'
-    TO_CONTACT = 3, 'À Contatar'
+    PENDING_DOCS = 1, 'Documentação pendente'
+    PARTIAL_DOCS = 2, 'Em andamento'
+    TO_CONTACT = 3, 'À contatar'
     DONE = 4, 'Concluído'
 
 
