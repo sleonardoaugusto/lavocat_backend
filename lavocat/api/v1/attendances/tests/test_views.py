@@ -145,6 +145,9 @@ class TestAttendanceStatusesView:
     def response(self, client):
         return client.get(reverse('api-v1:attendance-statuses'))
 
+    def test_status_code(self, response):
+        assert response.status_code == status.HTTP_200_OK
+
     def test_content(self, response):
         expect = {
             'Documentação pendente': 1,
