@@ -33,56 +33,51 @@ def attendance_file_serializer(attendance_file):
     return AttendanceFileSerializer(attendance_file)
 
 
-@pytest.mark.django_db
-class TestAttendanceSerializer:
-    def test_fields(self, attendance_serializer):
-        data = attendance_serializer.data
-        assert set(data.keys()) == {
-            'id',
-            'customer_name',
-            'document_id',
-            'files',
-            'status',
-            'status_label',
-            'resume',
-        }
-
-    def test_values(self, attendance_serializer, attendance):
-        values = (
-            ('id', attendance.pk),
-            ('customer_name', attendance.customer_name),
-            ('document_id', attendance.document_id),
-            ('status', attendance.status),
-            ('status_label', AttendanceStatus(attendance.status).label),
-            ('resume', attendance.resume),
-        )
-        for attr, value in values:
-            assert attendance_serializer.data[attr] == value
-
-    def test_document_id_length(self):
-        data = dict(customer_name='Valeu Natalina', document_id='9999999999')
-        serializer = AttendanceSerializer(data=data)
-        assert_validation_error_code(serializer, 'document_id', 'length')
+def test_fields_attendance_serializer(attendance_serializer):
+    data = attendance_serializer.data
+    assert set(data.keys()) == {
+        'id',
+        'customer_name',
+        'document_id',
+        'files',
+        'status',
+        'status_label',
+        'resume',
+    }
 
 
-@pytest.mark.django_db
-class TestAttendanceFileSerializer:
-    def test_fields(self, attendance_file_serializer):
-        assert set(attendance_file_serializer.data.keys()) == {
-            'id',
-            'file',
-            'attendance',
-            'filename',
-        }
+def test_values_attendance_serializer(attendance_serializer, attendance):
+    values = (
+        ('id', attendance.pk),
+        ('customer_name', attendance.customer_name),
+        ('document_id', attendance.document_id),
+        ('status', attendance.status),
+        ('status_label', AttendanceStatus(attendance.status).label),
+        ('resume', attendance.resume),
+    )
+    for attr, value in values:
+        assert attendance_serializer.data[attr] == value
 
-    def test_values(self, attendance_file, attendance_file_serializer):
-        assert (
-            attendance_file_serializer.data['file'] == f'/{attendance_file.file.name}'
-        )
-        assert attendance_file_serializer.data['filename'] == self.get_file_name(
-            attendance_file
-        )
 
-    @staticmethod
-    def get_file_name(record):
-        return PurePath(record.file.name).name
+def test_document_id_length():
+    data = dict(customer_name='Valeu Natalina', document_id='9999999999')
+    serializer = AttendanceSerializer(data=data)
+    assert_validation_error_code(serializer, 'document_id', 'length')
+
+
+def test_fields_attendance_file_serializer(attendance_file_serializer):
+    assert set(attendance_file_serializer.data.keys()) == {
+        'id',
+        'file',
+        'attendance',
+        'filename',
+    }
+
+
+def test_values_attendance_file_serializer(attendance_file, attendance_file_serializer):
+    assert attendance_file_serializer.data['file'] == f'/{attendance_file.file.name}'
+    assert attendance_file_serializer.data['filename'] == get_file_name(attendance_file)
+
+
+def get_file_name(record):
+    return PurePath(record.file.name).name

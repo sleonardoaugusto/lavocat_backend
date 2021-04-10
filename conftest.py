@@ -1,9 +1,15 @@
 from pathlib import Path
 
 import pytest
+from faker import Faker
 from rest_framework.test import APIClient
 
 from lavocat.attendances.models import AttendanceFile
+
+
+@pytest.fixture(autouse=True)
+def enable_db_access_for_all_tests(db):
+    pass
 
 
 @pytest.fixture
@@ -18,3 +24,8 @@ def delete_file():
     path = Path(af.file.path)
     path.unlink()
     path.parent.rmdir()
+
+
+@pytest.fixture
+def faker():
+    return Faker('pt-BR')
