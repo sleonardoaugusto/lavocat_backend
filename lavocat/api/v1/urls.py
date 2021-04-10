@@ -4,4 +4,5 @@ app_name = 'api.v1'
 
 urlpatterns = [
     path('', include('lavocat.api.v1.attendances.urls')),
+    path('', include('lavocat.api.v1.core.urls')),
 ]

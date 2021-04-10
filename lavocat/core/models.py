@@ -7,3 +7,7 @@ class ModelBase(models.Model):
 
     class Meta:
         abstract = True
+
+
+class UserAllowed(ModelBase):
+    email = models.EmailField(unique=True)
