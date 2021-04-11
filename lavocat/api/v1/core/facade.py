@@ -1,7 +1,10 @@
 import json
 
 import requests
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -24,7 +27,14 @@ def authenticate(email):
     if not user.exists():
         raise UserNotAllowed
 
-    user = User.objects.get(email=email)
+    try:
+        user = User.objects.get(email=email)
+    except ObjectDoesNotExist:
+        user = User()
+        user.username = email
+        user.email = email
+        user.password = make_password(BaseUserManager().make_random_password())
+        user.save()
 
     token = RefreshToken.for_user(user)
     return {
@@ -42,6 +52,6 @@ def google_auth(token):
         raise Unauthorized
 
     data = json.loads(r.text)
-
     user_email = data['email']
+
     return authenticate(user_email)
