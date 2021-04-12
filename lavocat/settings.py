@@ -131,9 +131,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
-MEDIA_ROOT = config("MEDIA_ROOT", default=Path.joinpath(BASE_DIR, "media"))
-
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', '')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', '')
@@ -145,6 +142,9 @@ AWS_S3_OBJECT_PARAMETERS = {
 AWS_STATIC_LOCATION = 'static'
 STATICFILES_STORAGE = 'storage_backends.StaticStorage'
 STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
+STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = config("MEDIA_ROOT", default=Path.joinpath(BASE_DIR, "media"))
 
 AWS_MEDIA_LOCATION = 'media'
 FILE_STORAGE = 'mysite.storage_backends.MediaStorage'

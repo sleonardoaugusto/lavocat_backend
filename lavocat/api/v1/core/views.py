@@ -1,20 +1,22 @@
-from django.http import HttpResponse
 from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from lavocat.api.v1.core import facade
 from lavocat.api.v1.core.facade import UserNotAllowed, Unauthorized
+from lavocat.api.v1.core.serializers import GoogleAuthSerializer
 
 
-class GoogleAuthView(APIView):
-    def post(self, request):
-        token = request.data.get('token')
+class GoogleAuthViewset(viewsets.ViewSet):
+    serializer_class = GoogleAuthSerializer
 
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
         try:
-            token_data = facade.google_auth(token)
+            token_data = facade.google_auth(serializer.data['token'])
             return Response(data=token_data)
         except (UserNotAllowed, Unauthorized):
-            return HttpResponse(
+            return Response(
                 {'message': 'Não autorizado'}, status=status.HTTP_401_UNAUTHORIZED
             )

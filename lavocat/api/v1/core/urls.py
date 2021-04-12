@@ -1,7 +1,11 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import SimpleRouter
 
-from lavocat.api.v1.core import views
+from lavocat.api.v1.core.views import GoogleAuthViewset
+
+router = SimpleRouter()
+router.register('google-auth', GoogleAuthViewset, basename='google-auth')
 
 urlpatterns = [
-    path('google-auth/', views.GoogleAuthView.as_view(), name='google-auth'),
+    path('', include(router.urls)),
 ]

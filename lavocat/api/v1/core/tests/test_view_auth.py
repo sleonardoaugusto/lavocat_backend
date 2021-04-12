@@ -10,7 +10,7 @@ from lavocat.api.v1.core.facade import UserNotAllowed, Unauthorized
 @pytest.fixture
 def post_authenticate_mock(client, google_auth_mock, google_token):
     return client.post(
-        reverse('api-v1:google-auth'),
+        reverse('api-v1:google-auth-list'),
         json.dumps({'token': google_token}),
         content_type='application/json',
     )
@@ -21,11 +21,11 @@ def test_must_call_action(post_authenticate_mock, google_auth_mock, google_token
 
 
 @pytest.fixture
-def post_authenticate_not_allowed(client, google_auth_mock):
+def post_authenticate_not_allowed(client, google_auth_mock, google_token):
     google_auth_mock.side_effect = UserNotAllowed
     return client.post(
-        reverse('api-v1:google-auth'),
-        json.dumps({'token': ''}),
+        reverse('api-v1:google-auth-list'),
+        json.dumps({'token': google_token}),
         content_type='application/json',
     )
 
@@ -35,11 +35,11 @@ def test_not_allowed(post_authenticate_not_allowed):
 
 
 @pytest.fixture
-def post_authenticate_unauthorized(client, google_auth_mock):
+def post_authenticate_unauthorized(client, google_auth_mock, google_token):
     google_auth_mock.side_effect = Unauthorized
     return client.post(
-        reverse('api-v1:google-auth'),
-        json.dumps({'token': ''}),
+        reverse('api-v1:google-auth-list'),
+        json.dumps({'token': google_token}),
         content_type='application/json',
     )
 
@@ -58,11 +58,13 @@ def response_content_authorized(token_data, user_email):
 
 
 @pytest.fixture
-def post_authenticate_authorized(client, google_auth_mock, response_content_authorized):
+def post_authenticate_authorized(
+    client, google_auth_mock, response_content_authorized, google_token
+):
     google_auth_mock.return_value = response_content_authorized
     return client.post(
-        reverse('api-v1:google-auth'),
-        json.dumps({'token': ''}),
+        reverse('api-v1:google-auth-list'),
+        json.dumps({'token': google_token}),
         content_type='application/json',
     )
 
