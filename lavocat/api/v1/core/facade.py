@@ -25,7 +25,7 @@ def authenticate(email):
     user = UserAllowed.objects.filter(email=email)
 
     if not user.exists():
-        raise UserNotAllowed
+        raise UserNotAllowed(f"{email} doesn't have permission to access the system.")
 
     try:
         user = User.objects.get(email=email)
