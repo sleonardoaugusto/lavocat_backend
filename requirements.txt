@@ -19,6 +19,7 @@ pytest-mock==3.5.1
 djangorestframework-simplejwt==4.6.0
 Faker==8.0.0
 requests==2.25.1
+drf-yasg==1.20.0
 
 # Heroku
 dj-database-url==0.5.0
