@@ -2,7 +2,9 @@ from pathlib import Path
 
 import pytest
 from faker import Faker
+from model_bakery import baker
 from rest_framework.test import APIClient
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from lavocat.attendances.models import AttendanceFile
 
@@ -14,7 +16,11 @@ def enable_db_access_for_all_tests(db):
 
 @pytest.fixture
 def client():
-    return APIClient()
+    user = baker.make('User')
+    token = RefreshToken.for_user(user)
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.access_token}')
+    return client
 
 
 @pytest.fixture
