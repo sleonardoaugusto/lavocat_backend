@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'test_without_migrations',
     'rest_framework',
+    'drf_yasg',
     'django_filters',
     'lavocat.core',
     'lavocat.attendances',
@@ -71,11 +72,15 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
 
 ROOT_URLCONF = 'lavocat.urls'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 TEMPLATES = [
     {
@@ -146,14 +151,24 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 
-AWS_STATIC_LOCATION = 'static'
-STATICFILES_STORAGE = 'storage_backends.StaticStorage'
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
-STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
-MEDIA_URL = '/media/'
-MEDIA_ROOT = config("MEDIA_ROOT", default=Path.joinpath(BASE_DIR, "media"))
-
-AWS_MEDIA_LOCATION = 'media'
-FILE_STORAGE = 'mysite.storage_backends.MediaStorage'
-
-LOGIN_REDIRECT_URL = '/api/v1/attendances/'
+# Prod/Dev environment
+if config('USE_S3', cast=bool, default=True):
+    # aws settings
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', '')
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', '')
+    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', '')
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    # s3 static settings
+    AWS_STATIC_LOCATION = 'static'
+    STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
+    STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'storage_backends.StaticStorage'
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = config("MEDIA_ROOT", default=Path.joinpath(BASE_DIR, "media"))
+else:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
+    MEDIA_URL = '/mediafiles/'
+    MEDIA_ROOT = Path.joinpath(BASE_DIR, 'mediafiles')

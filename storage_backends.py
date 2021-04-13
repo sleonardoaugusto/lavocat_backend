@@ -1,11 +1,9 @@
 from storages.backends.s3boto3 import S3Boto3Storage
 
-from lavocat import settings
-
 
 class StaticStorage(S3Boto3Storage):
-    location = settings.AWS_STATIC_LOCATION
+    location = 'static'
 
 
 class MediaStorage(S3Boto3Storage):
-    location = settings.AWS_MEDIA_LOCATION
+    location = 'media'
