@@ -15,6 +15,11 @@ def enable_db_access_for_all_tests(db):
 
 
 @pytest.fixture
+def client_unauthenticated():
+    return APIClient()
+
+
+@pytest.fixture
 def client():
     user = baker.make('User')
     token = RefreshToken.for_user(user)
