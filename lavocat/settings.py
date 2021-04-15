@@ -12,12 +12,14 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
+import sentry_sdk
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from decouple import config, Csv
 from dj_database_url import parse as dburl
+from sentry_sdk.integrations.django import DjangoIntegration
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -99,7 +101,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lavocat.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -107,7 +108,6 @@ default_dburl = f"sqlite:///{BASE_DIR}/db.sqlite3"
 DATABASES = {
     "default": config("DATABASE_URL", default=default_dburl, cast=dburl),
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -127,7 +127,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -140,7 +139,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', '')
@@ -171,3 +169,10 @@ else:
     STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
     MEDIA_URL = '/mediafiles/'
     MEDIA_ROOT = Path.joinpath(BASE_DIR, 'mediafiles')
+
+sentry_sdk.init(
+    dsn="https://fff76d9a6f834c89a5fa059e4d1b9f3c@o346271.ingest.sentry.io/5721647",
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=1.0,
+    send_default_pii=True,
+)
