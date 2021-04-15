@@ -76,7 +76,8 @@ def test_fields_attendance_file_serializer(attendance_file_serializer):
 
 def test_values_attendance_file_serializer(attendance_file, attendance_file_serializer):
     assert (
-        attendance_file_serializer.data['file'] == f'/media/{attendance_file.file.name}'
+        attendance_file_serializer.data['file']
+        == f'/mediafiles/{attendance_file.file.name}'
     )
     assert attendance_file_serializer.data['filename'] == get_file_name(attendance_file)
 
