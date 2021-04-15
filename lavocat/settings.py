@@ -151,7 +151,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 
 # Prod/Dev environment
-if config('USE_S3', cast=bool, default=True):
+if config('USE_S3', cast=bool, default=False):
     # aws settings
     AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', '')
     AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', '')
