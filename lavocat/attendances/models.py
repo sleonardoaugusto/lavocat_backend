@@ -29,3 +29,8 @@ class AttendanceFile(ModelBase):
         Attendance, on_delete=models.DO_NOTHING, related_name='files'
     )
     file = models.FileField(null=False, upload_to=upload_to, storage=MediaStorage())
+
+    # TODO tests
+    def delete(self, using=None, keep_parents=False):
+        self.file.storage.delete(self.file.name)
+        super().delete()
