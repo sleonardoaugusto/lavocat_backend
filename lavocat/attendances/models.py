@@ -15,7 +15,7 @@ class AttendanceStatus(models.IntegerChoices):
 class Attendance(ModelBase):
     customer_name = models.CharField(max_length=128)
     document_id = models.CharField(
-        null=True, max_length=11, validators=[validate_document_id]
+        null=True, blank=True, max_length=11, validators=[validate_document_id]
     )
     status = models.PositiveSmallIntegerField(choices=AttendanceStatus.choices)
     resume = models.TextField(null=True)
