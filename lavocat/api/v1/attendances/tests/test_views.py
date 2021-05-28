@@ -54,6 +54,15 @@ def test_attendance_content_response(post_attendance_response):
     assert post_attendance_response.json() == expect
 
 
+def test_attendance_delete(client):
+    attendance_file = baker.make('AttendanceFile')
+    resp = client.delete(
+        reverse('api-v1:attendance-detail', args=[attendance_file.attendance.pk])
+    )
+    assert resp.status_code == status.HTTP_204_NO_CONTENT
+    assert Attendance.objects.all().count() == 0
+
+
 @pytest.fixture
 def attendances():
     params = [

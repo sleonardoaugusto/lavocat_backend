@@ -28,7 +28,7 @@ def upload_to(instance, fname):
 
 class AttendanceFile(ModelBase):
     attendance = models.ForeignKey(
-        Attendance, on_delete=models.DO_NOTHING, related_name='files'
+        Attendance, on_delete=models.CASCADE, related_name='files'
     )
     file = models.FileField(null=False, upload_to=upload_to, storage=MediaStorage())
 
