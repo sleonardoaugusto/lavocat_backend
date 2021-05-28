@@ -41,7 +41,7 @@ def post_attendance_response(client):
     )
 
 
-def test_attendance_must_exist(post_attendance_response):
+def test_attendance_should_exist(post_attendance_response):
     assert Attendance.objects.all().count() == 1
 
 
@@ -109,7 +109,7 @@ def post_attendance_file(client, delete_file):
     return client.post(reverse('api-v1:attendancefile-list'), payload)
 
 
-def test_attendance_file_must_exist(post_attendance_file):
+def test_attendance_file_should_exist(post_attendance_file):
     assert AttendanceFile.objects.all().count() == 1
 
 

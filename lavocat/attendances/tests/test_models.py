@@ -16,7 +16,7 @@ def attendance():
     )
 
 
-def test_must_exist_attendance_model(attendance):
+def test_should_exist_attendance_model(attendance):
     assert Attendance.objects.all().count() == 1
 
 
@@ -26,7 +26,7 @@ def attendance_file(delete_file):
     return baker.make('AttendanceFile', _create_files=True)
 
 
-def test_must_exist_attendance_file(attendance_file):
+def test_should_exist_attendance_file(attendance_file):
     assert Attendance.objects.all().count() == 1
 
 

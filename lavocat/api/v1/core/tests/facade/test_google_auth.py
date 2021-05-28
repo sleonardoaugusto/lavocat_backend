@@ -40,7 +40,7 @@ def mocker_authenticate(mocker):
     return mocker.patch('lavocat.api.v1.core.facade.authenticate')
 
 
-def test_must_call_get_with_params(
+def test_should_call_get_with_params(
     google_token, requests_get, authorized, mocker_authenticate
 ):
     facade.google_auth(google_token)
@@ -79,7 +79,7 @@ def refreshed_token(mocker_refresh_token, token_data):
     mocker_refresh_token.return_value = Token()
 
 
-def test_must_authenticate(user, refreshed_token, token_data):
+def test_should_authenticate(user, refreshed_token, token_data):
     token = facade.authenticate(user.email)
     assert token == {
         'useremail': user.email,
@@ -93,7 +93,7 @@ def user_allowed_but_not_registered(user_email):
     return baker.make('UserAllowed', email=user_email)
 
 
-def test_must_create_user_and_authenticate(
+def test_should_create_user_and_authenticate(
     user_allowed_but_not_registered, refreshed_token, token_data
 ):
     email = user_allowed_but_not_registered.email

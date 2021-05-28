@@ -16,7 +16,7 @@ def post_authenticate_mock(client, google_auth_mock, google_token):
     )
 
 
-def test_must_call_action(post_authenticate_mock, google_auth_mock, google_token):
+def test_should_call_action(post_authenticate_mock, google_auth_mock, google_token):
     google_auth_mock.assert_called_once_with(google_token)
 
 

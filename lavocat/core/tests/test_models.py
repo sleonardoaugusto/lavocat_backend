@@ -9,5 +9,5 @@ def record():
     return baker.make('UserAllowed')
 
 
-def test_must_exist(record):
+def test_should_exist(record):
     assert UserAllowed.objects.all().exists()
