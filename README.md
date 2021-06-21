@@ -20,5 +20,5 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp contrib/env-sample .env
-python manage.py test
+pytest
 ```
