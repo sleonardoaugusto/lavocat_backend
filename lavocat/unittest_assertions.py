@@ -1,5 +1,5 @@
-from unittest import TestCase
+from django.test import TestCase
 
 _unittest_testcase = TestCase()
 
-unittest_subtest = _unittest_testcase.subTest
+unittest_assert_redirects = _unittest_testcase.assertRedirects
