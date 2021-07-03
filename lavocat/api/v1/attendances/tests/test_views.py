@@ -8,16 +8,11 @@ from django.core.files import File
 from model_bakery import baker
 from rest_framework import status
 from rest_framework.reverse import reverse
-from rest_framework.test import APIClient
 
 from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
 )
 from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
-
-
-class Client:
-    client = APIClient()
 
 
 def test_get_attendance_viewset(client):
