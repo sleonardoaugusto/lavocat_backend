@@ -168,10 +168,10 @@ if config('USE_S3', cast=bool, default=False):
     MEDIA_URL = '/media/'
     MEDIA_ROOT = config("MEDIA_ROOT", default=Path.joinpath(BASE_DIR, "media"))
 else:
-    STATIC_URL = '/static/'
-    STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
+    STATIC_URL = '/staticfiles/'
+    STATIC_ROOT = str(Path.joinpath(BASE_DIR, 'staticfiles'))
     MEDIA_URL = '/mediafiles/'
-    MEDIA_ROOT = Path.joinpath(BASE_DIR, 'mediafiles')
+    MEDIA_ROOT = str(Path.joinpath(BASE_DIR, 'mediafiles'))
 
 sentry_sdk.init(
     dsn="https://fff76d9a6f834c89a5fa059e4d1b9f3c@o346271.ingest.sentry.io/5721647",
