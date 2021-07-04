@@ -161,10 +161,10 @@ if config('USE_S3', cast=bool, default=False):
     AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
     # s3 static settings
+    STATICFILES_STORAGE = 'storage_backends.StaticStorage'
     AWS_STATIC_LOCATION = 'static'
     STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
     STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
-    STATICFILES_STORAGE = 'storage_backends.StaticStorage'
     MEDIA_URL = '/media/'
     MEDIA_ROOT = config("MEDIA_ROOT", default=Path.joinpath(BASE_DIR, "media"))
 else:
