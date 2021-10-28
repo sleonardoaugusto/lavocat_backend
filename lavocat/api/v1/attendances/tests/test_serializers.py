@@ -43,6 +43,7 @@ def test_fields_attendance_serializer(attendance_serializer):
         'status',
         'status_label',
         'resume',
+        'status_resume',
     }
 
 
@@ -54,6 +55,7 @@ def test_values_attendance_serializer(attendance_serializer, attendance):
         ('status', attendance.status),
         ('status_label', AttendanceStatus(attendance.status).label),
         ('resume', attendance.resume),
+        ('status_resume', attendance.status_resume),
     )
     for attr, value in values:
         assert attendance_serializer.data[attr] == value

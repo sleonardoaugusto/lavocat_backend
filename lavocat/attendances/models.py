@@ -19,6 +19,7 @@ class Attendance(ModelBase):
     )
     status = models.PositiveSmallIntegerField(choices=AttendanceStatus.choices)
     resume = models.TextField(null=True)
+    status_resume = models.TextField(null=True)
 
 
 def upload_to(instance, fname):

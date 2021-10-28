@@ -35,6 +35,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             'status',
             'status_label',
             'resume',
+            'status_resume',
         )
 
     def get_status_label(self, obj):

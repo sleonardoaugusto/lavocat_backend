@@ -27,6 +27,8 @@ def post_attendance_response(client):
         customer_name='Valeu Natalina',
         document_id=99999999999,
         status=AttendanceStatus.PENDING_DOCS,
+        resume='Resume description',
+        status_resume='Status resume description',
     )
     payload = AttendanceSerializer(attendance).data
     return client.post(
@@ -45,8 +47,16 @@ def test_attendance_status_response(post_attendance_response):
 
 
 def test_attendance_content_response(post_attendance_response):
-    expect = AttendanceSerializer(Attendance.objects.all().first()).data
-    assert post_attendance_response.json() == expect
+    assert post_attendance_response.json() == {
+        'customer_name': 'Valeu Natalina',
+        'document_id': '99999999999',
+        'files': [],
+        'id': 1,
+        'resume': 'Resume description',
+        'status': 1,
+        'status_label': 'Documentação pendente',
+        'status_resume': 'Status resume description',
+    }
 
 
 def test_attendance_delete(client):
