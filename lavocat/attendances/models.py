@@ -23,8 +23,8 @@ class Attendance(ModelBase):
 
 
 def upload_to(instance, fname):
-    document_id = instance.attendance.document_id
-    return f'documentos/{document_id}/{fname}'
+    attendance_pk = instance.attendance.pk
+    return f'documentos/{attendance_pk}/{fname}'
 
 
 class AttendanceFile(ModelBase):
