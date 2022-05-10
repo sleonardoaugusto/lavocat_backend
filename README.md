@@ -1,6 +1,6 @@
 # L'avocat
 
-[![Tests](https://github.com/sleonardoaugusto/lavocat_backend/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/sleonardoaugusto/lavocat_backend/actions/workflows/ci-cd.yaml)
+[![Tests](https://github.com/sleonardoaugusto/lavocat_backend/actions/workflows/ci-cd.yaml/badge.svg?branch=master)](https://github.com/sleonardoaugusto/lavocat_backend/actions/workflows/ci-cd.yaml)
 
 A lawyer clients system.
 
