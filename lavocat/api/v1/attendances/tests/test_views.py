@@ -1,5 +1,4 @@
 import json
-from pathlib import PurePath
 from time import time
 from unittest import mock
 
@@ -15,13 +14,23 @@ from lavocat.api.v1.attendances.serializers import (
 from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
 
 
-def test_get_attendance_viewset(client):
+def test_get_attendance(client):
+    baker.make("Attendance")
     resp = client.get(reverse('api-v1:attendance-list'))
     assert resp.status_code, status.HTTP_200_OK
+    assert set(resp.json()[0]) == {
+        'customer_name',
+        'document_id',
+        'files',
+        'id',
+        'resume',
+        'status',
+        'status_label',
+        'status_resume',
+    }
 
 
-@pytest.fixture
-def post_attendance_response(client):
+def test_post_attendance(client):
     attendance = baker.prepare(
         'Attendance',
         customer_name='Valeu Natalina',
@@ -31,35 +40,26 @@ def post_attendance_response(client):
         status_resume='Status resume description',
     )
     payload = AttendanceSerializer(attendance).data
-    return client.post(
+    response = client.post(
         reverse('api-v1:attendance-list'),
         json.dumps(payload),
         content_type='application/json',
     )
-
-
-def test_attendance_should_exist(post_attendance_response):
     assert Attendance.objects.all().count() == 1
-
-
-def test_attendance_status_response(post_attendance_response):
-    assert post_attendance_response.status_code == status.HTTP_201_CREATED
-
-
-def test_attendance_content_response(post_attendance_response):
-    assert post_attendance_response.json() == {
-        'customer_name': 'Valeu Natalina',
-        'document_id': '99999999999',
-        'files': [],
-        'id': 1,
-        'resume': 'Resume description',
-        'status': 1,
-        'status_label': 'Documentação pendente',
-        'status_resume': 'Status resume description',
+    assert response.status_code == status.HTTP_201_CREATED
+    assert set(response.json()) == {
+        'customer_name',
+        'document_id',
+        'files',
+        'id',
+        'resume',
+        'status',
+        'status_label',
+        'status_resume',
     }
 
 
-def test_attendance_delete(client):
+def test_delete_attendance(client):
     attendance_file = baker.make('AttendanceFile')
     resp = client.delete(
         reverse('api-v1:attendance-detail', args=[attendance_file.attendance.pk])
@@ -111,7 +111,7 @@ def test_filter_by_attendance_status(attendances, client):
     assert len(data) == 2
 
 
-def test_get_attendance_file_viewset(client):
+def test_get_attendance_file(client):
     response = client.get(reverse('api-v1:attendancefile-list'))
     assert response.status_code == status.HTTP_200_OK
 
@@ -120,26 +120,10 @@ def test_get_attendance_file_viewset(client):
 def post_attendance_file(client, delete_file):
     attendance = baker.make('Attendance')
     payload = {'attendance': attendance.pk, 'file': mock_file()}
-    return client.post(reverse('api-v1:attendancefile-list'), payload)
-
-
-def test_attendance_file_should_exist(post_attendance_file):
+    resp = client.post(reverse('api-v1:attendancefile-list'), payload)
     assert AttendanceFile.objects.all().count() == 1
-
-
-def test_attendance_file_status_response(post_attendance_file):
-    assert post_attendance_file.status_code == status.HTTP_201_CREATED
-
-
-def test_attendance_file_content_returned(post_attendance_file):
-    record = AttendanceFile.objects.all().first()
-    expect = {
-        'id': record.pk,
-        'attendance': record.attendance.pk,
-        'file': _get_file_url(record.file.url),
-        'filename': PurePath(record.file.name).name,
-    }
-    assert post_attendance_file.json() == expect
+    assert resp.status_code == status.HTTP_201_CREATED
+    assert set(post_attendance_file.json()) == {'id' 'attendance' 'file' 'filename'}
 
 
 def mock_file():
@@ -153,20 +137,12 @@ def _get_file_url(fpath):
     return f'http://testserver{fpath}'
 
 
-@pytest.fixture
-def attendance_statuses_response(client):
-    return client.get(reverse('api-v1:attendance-statuses'))
-
-
-def test_status_code(attendance_statuses_response):
-    assert attendance_statuses_response.status_code == status.HTTP_200_OK
-
-
-def test_content(attendance_statuses_response):
-    expect = {
+def test_get_attendance_statuses(client):
+    resp = client.get(reverse('api-v1:attendance-statuses'))
+    assert resp.status_code == status.HTTP_200_OK
+    assert resp.json() == {
         'Documentação pendente': 1,
         'Em andamento': 2,
         'À contatar': 3,
         'Concluído': 4,
     }
-    assert attendance_statuses_response.json() == expect
