@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/sleonardoaugusto/lavocat_backend/actions/workflows/ci-cd.yaml/badge.svg?branch=master)](https://github.com/sleonardoaugusto/lavocat_backend/actions/workflows/ci-cd.yaml)
 
-A lawyer clients system.
+A lawyer system.
 
 ## How develop?
 
