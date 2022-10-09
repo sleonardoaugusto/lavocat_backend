@@ -179,3 +179,10 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
     send_default_pii=True,
 )
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {'type': 'apiKey', 'name': 'Authorization', 'in': 'header'}
+    },
+}
