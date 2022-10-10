@@ -21,6 +21,9 @@ class Attendance(ModelBase):
     resume = models.TextField(null=True)
     status_resume = models.TextField(null=True)
 
+    class Meta:
+        ordering = ['-updated_at']
+
 
 def upload_to(instance, fname):
     attendance_pk = instance.attendance.pk
