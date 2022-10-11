@@ -16,13 +16,16 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.shortcuts import redirect
+from django.urls import path, include, reverse
 
 
 urlpatterns = [
+    path('', lambda *args: redirect(reverse('api-v1:docs'))),
     path('admin/', admin.site.urls),
     path('api/v1/', include('lavocat.api.v1.urls', namespace='api-v1')),
     path('accounts/', include('rest_framework.urls')),
 ]
+
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

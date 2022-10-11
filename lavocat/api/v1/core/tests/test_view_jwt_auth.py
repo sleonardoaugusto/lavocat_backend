@@ -36,7 +36,6 @@ def test_status_code(post_authorized):
 
 
 def test_content(post_authorized):
-    access_token_len = 205
-    refresh_token_len = 207
-    assert len(post_authorized.json()['access']) == access_token_len
-    assert len(post_authorized.json()['refresh']) == refresh_token_len
+    min_length, max_length = 205, 208
+    assert min_length <= len(post_authorized.json()['access']) <= max_length
+    assert min_length <= len(post_authorized.json()['refresh']) <= max_length
