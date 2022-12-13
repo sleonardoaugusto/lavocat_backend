@@ -19,4 +19,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # copy project
-COPY . /usr/src/lavocat_backend
+COPY . .
