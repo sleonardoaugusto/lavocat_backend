@@ -1,6 +1,9 @@
 from pathlib import Path
+from time import time
+from unittest import mock
 
 import pytest
+from django.core.files import File
 from faker import Faker
 from model_bakery import baker
 from rest_framework.test import APIClient
@@ -40,3 +43,11 @@ def delete_file():
 @pytest.fixture
 def faker():
     return Faker('pt-BR')
+
+
+@pytest.fixture
+def file():
+    fname = f'{int(str(time()).replace(".", ""))}.doc'
+    file_mock = mock.Mock(spec=File)
+    file_mock.name = fname
+    return file_mock
