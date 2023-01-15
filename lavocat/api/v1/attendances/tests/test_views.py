@@ -121,11 +121,27 @@ class TestAttendanceFileEndpoint:
     @staticmethod
     def test_post_attendance_file(client, delete_file, file):
         attendance = baker.make('Attendance')
-        payload = {'attendance': attendance.pk, 'file': file}
+        payload = {'attendance': attendance.pk, 'file': file, 'filename': file.name}
         resp = client.post(reverse('api-v1:attendancefile-list'), payload)
+        attendance_file = AttendanceFile.objects.first()
         assert AttendanceFile.objects.all().count() == 1
         assert resp.status_code == status.HTTP_201_CREATED
-        assert set(resp.json()) == {'id' 'attendance' 'file' 'filename'}
+        assert attendance_file.filename == 'file.txt'
+
+    @staticmethod
+    def test_update_filename(client, delete_file, file):
+        attendance_file = baker.make(
+            'AttendanceFile',
+            file=file,
+            attendance=baker.make('Attendance', _fill_optional=True),
+        )
+        resp = client.patch(
+            reverse('api-v1:attendancefile-detail', args=[attendance_file.pk]),
+            data={"filename": "new-name.pdf"},
+        )
+        attendance_file.refresh_from_db()
+        assert resp.status_code == status.HTTP_200_OK
+        assert attendance_file.filename == 'new-name.pdf'
 
 
 def test_get_attendance_statuses(client):

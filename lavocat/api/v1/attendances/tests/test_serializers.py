@@ -1,5 +1,3 @@
-from pathlib import PurePath
-
 import pytest
 from django.core.files.storage import FileSystemStorage
 from model_bakery import baker
@@ -87,10 +85,4 @@ class TestAttendanceFileSerializer:
             attendance_file_serializer.data['file']
             == f'/mediafiles/{attendance_file.file.name}'
         )
-        assert attendance_file_serializer.data['filename'] == get_file_name(
-            attendance_file
-        )
-
-
-def get_file_name(record):
-    return PurePath(record.file.name).name
+        assert attendance_file_serializer.data['filename'] == attendance_file.filename

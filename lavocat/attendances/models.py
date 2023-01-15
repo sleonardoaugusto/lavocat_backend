@@ -4,6 +4,8 @@ from lavocat.attendances.validators import validate_document_id
 from lavocat.core.models import ModelBase
 from storage_backends import MediaStorage
 
+import uuid
+
 
 class AttendanceStatus(models.IntegerChoices):
     PENDING_DOCS = 1, 'Documentação pendente'
@@ -25,9 +27,11 @@ class Attendance(ModelBase):
         ordering = ['-updated_at']
 
 
-def upload_to(instance, fname):
+def upload_to(instance, filename):
     attendance_pk = instance.attendance.pk
-    return f'documentos/{attendance_pk}/{fname}'
+    ext = filename.split('.')[-1]
+    new_filename = f'{uuid.uuid4()}.{ext}'
+    return f'documentos/{attendance_pk}/{new_filename}'
 
 
 class AttendanceFile(ModelBase):
@@ -35,6 +39,7 @@ class AttendanceFile(ModelBase):
         Attendance, on_delete=models.CASCADE, related_name='files'
     )
     file = models.FileField(null=False, upload_to=upload_to, storage=MediaStorage())
+    filename = models.CharField(null=False, max_length=124)
 
     # TODO tests
     def delete(self, using=None, keep_parents=False):

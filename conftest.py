@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from faker import Faker
 from model_bakery import baker
 from rest_framework.test import APIClient
@@ -47,7 +48,4 @@ def faker():
 
 @pytest.fixture
 def file():
-    fname = f'{int(str(time()).replace(".", ""))}.doc'
-    file_mock = mock.Mock(spec=File)
-    file_mock.name = fname
-    return file_mock
+    return SimpleUploadedFile('file.txt', b'hi there', content_type='application/pdf')

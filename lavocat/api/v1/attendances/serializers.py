@@ -6,8 +6,6 @@ from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceSta
 
 
 class AttendanceFileSerializer(serializers.ModelSerializer):
-    filename = serializers.SerializerMethodField()
-
     class Meta:
         model = AttendanceFile
         fields = (
@@ -16,9 +14,6 @@ class AttendanceFileSerializer(serializers.ModelSerializer):
             'file',
             'filename',
         )
-
-    def get_filename(self, obj):
-        return PurePath(obj.file.name).name
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
