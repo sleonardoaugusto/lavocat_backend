@@ -153,3 +153,23 @@ def test_get_attendance_statuses(client):
         'À contatar': 3,
         'Concluído': 4,
     }
+
+
+class TestAttendanceFilesNestedView:
+    @staticmethod
+    def test_list_attendance_files_by_application(client):
+        attendance_file = baker.make('AttendanceFile')
+        baker.make("AttendanceFile")
+        url = reverse(
+            'api-v1:attendance-attendance-file-list',
+            kwargs={'attendance_pk': attendance_file.attendance.pk},
+        )
+        resp = client.get(url)
+        assert resp.status_code == status.HTTP_200_OK
+        assert len(resp.json()) == 1
+        assert set(resp.json()[0]) == {
+            'attendance',
+            'file',
+            'id',
+            'filename',
+        }

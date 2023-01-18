@@ -10,16 +10,29 @@ from lavocat.api.v1.attendances.serializers import (
 from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
 
 
-class AttendanceViewset(viewsets.ModelViewSet):
+class BaseNestedRouteViewSet(viewsets.ModelViewSet):
+    nested_lookup = None
+
+    def get_queryset(self):
+        return self.queryset.filter(attendance=self.kwargs[self.nested_lookup])
+
+
+class AttendanceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = AttendanceFilter
 
 
-class AttendanceFileViewset(viewsets.ModelViewSet):
+class AttendanceFileViewSet(viewsets.ModelViewSet):
     queryset = AttendanceFile.objects.all()
     serializer_class = AttendanceFileSerializer
+
+
+class NestedAttendanceFileViewSet(BaseNestedRouteViewSet):
+    queryset = AttendanceFile.objects.all()
+    serializer_class = AttendanceFileSerializer
+    nested_lookup = 'attendance_pk'
 
 
 class AttendanceStatusesView(views.APIView):

@@ -1,5 +1,3 @@
-from pathlib import PurePath
-
 from rest_framework import serializers
 
 from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus

@@ -1,15 +1,27 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
+from rest_framework_nested import routers
 
 from lavocat.api.v1.attendances.views import (
-    AttendanceViewset,
-    AttendanceFileViewset,
+    AttendanceViewSet,
+    AttendanceFileViewSet,
     AttendanceStatusesView,
+    NestedAttendanceFileViewSet,
 )
 
 router = SimpleRouter()
-router.register('attendances', AttendanceViewset)
-router.register('attendance-files', AttendanceFileViewset)
+router.register('attendances', AttendanceViewSet)
+router.register('attendance-files', AttendanceFileViewSet)
+
+
+attendance_router = routers.NestedSimpleRouter(
+    router, 'attendances', lookup='attendance'
+)
+attendance_router.register(
+    'attendance-files',
+    NestedAttendanceFileViewSet,
+    basename='attendance-attendance-file',
+)
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -18,4 +30,5 @@ urlpatterns = [
         AttendanceStatusesView.as_view(),
         name='attendance-statuses',
     ),
+    path('', include(attendance_router.urls)),
 ]
