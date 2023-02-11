@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class SoftDeleteManager(models.Manager):
@@ -13,6 +14,13 @@ class SoftDeleteModel(models.Model):
 
     class Meta:
         abstract = True
+
+    def delete(self, using=None, keep_parents=False, soft=True):
+        if soft:
+            self.deleted_at = timezone.now()
+            self.save(using=using)
+        else:
+            return super().delete(using=using, keep_parents=keep_parents)
 
 
 class ModelBase(SoftDeleteModel):
