@@ -5,7 +5,7 @@ from lavocat.attendances.models import (
     Attendance,
     AttendanceFile,
     AttendanceStatus,
-    ServicesOffered,
+    ServicesTypesOptions,
 )
 
 
@@ -22,8 +22,8 @@ class AttendanceFileSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     files = AttendanceFileSerializer(many=True, read_only=True)
-    services_provided = MultipleChoiceField(
-        choices=ServicesOffered.choices, allow_null=True
+    services_types = MultipleChoiceField(
+        choices=ServicesTypesOptions.choices, allow_null=True
     )
 
     class Meta:
@@ -33,8 +33,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             'customer_name',
             'document_id',
             'files',
-            'status',
             'resume',
             'status_resume',
-            'services_provided',
+            'services_types',
         )

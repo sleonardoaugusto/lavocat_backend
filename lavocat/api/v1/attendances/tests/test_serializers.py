@@ -40,10 +40,8 @@ class TestAttendanceSerializer:
             'customer_name',
             'document_id',
             'files',
-            'status',
-            'status_label',
             'resume',
-            'services_provided',
+            'services_types',
             'status_resume',
         }
 
@@ -53,8 +51,6 @@ class TestAttendanceSerializer:
             ('id', attendance.pk),
             ('customer_name', attendance.customer_name),
             ('document_id', attendance.document_id),
-            ('status', attendance.status),
-            ('status_label', AttendanceStatus(attendance.status).label),
             ('resume', attendance.resume),
             ('status_resume', attendance.status_resume),
         )

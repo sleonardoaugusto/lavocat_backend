@@ -15,7 +15,7 @@ class AttendanceStatus(models.IntegerChoices):
     DONE = 4, 'Concluído'
 
 
-class ServicesOffered(models.TextChoices):
+class ServicesTypesOptions(models.TextChoices):
     DPVAT = 'DPVAT', 'DPVAT'
     AUXILIO_DOENCA = 'AUXILIO_DOENCA', 'Auxílio Doença'
     AUXILIO_ACIDENTE = 'AUXILIO_ACIDENTE', 'Auxílio Acidente'
@@ -39,15 +39,15 @@ class Attendance(ModelBase):
         null=True, blank=True, max_length=11, validators=[validate_document_id]
     )
     status = models.PositiveSmallIntegerField(
-        choices=AttendanceStatus.choices, null=True, default=None
+        choices=AttendanceStatus.choices, null=True
     )
     resume = models.TextField(null=True)
     status_resume = models.TextField(null=True)
-    services_provided = MultiSelectField(
+    services_types = MultiSelectField(
         null=True,
         max_length=124,
-        max_choices=len(ServicesOffered.choices),
-        choices=ServicesOffered.choices,
+        max_choices=len(ServicesTypesOptions.choices),
+        choices=ServicesTypesOptions.choices,
     )
 
     class Meta:

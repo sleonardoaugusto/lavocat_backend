@@ -8,7 +8,12 @@ from rest_framework.reverse import reverse
 from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
 )
-from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
+from lavocat.attendances.models import (
+    Attendance,
+    AttendanceFile,
+    AttendanceStatus,
+    ServicesTypesOptions,
+)
 
 
 class TestAttendanceEndpoints:
@@ -23,9 +28,7 @@ class TestAttendanceEndpoints:
             'files',
             'id',
             'resume',
-            'services_provided',
-            'status',
-            'status_label',
+            'services_types',
             'status_resume',
         }
 
@@ -53,9 +56,7 @@ class TestAttendanceEndpoints:
             'files',
             'id',
             'resume',
-            'services_provided',
-            'status',
-            'status_label',
+            'services_types',
             'status_resume',
         }
 
@@ -77,17 +78,17 @@ class TestAttendanceFilters:
             dict(
                 customer_name='Maria',
                 document_id='99999999999',
-                status=AttendanceStatus.PENDING_DOCS,
+                services_types=ServicesTypesOptions.DPVAT,
             ),
             dict(
                 customer_name='Mara',
                 document_id='11199999999',
-                status=AttendanceStatus.DONE,
+                services_types=ServicesTypesOptions.AUXILIO_DOENCA,
             ),
             dict(
                 customer_name='Faria',
                 document_id='11999999999',
-                status=AttendanceStatus.TO_CONTACT,
+                services_types=ServicesTypesOptions.AUXILIO_ACIDENTE,
             ),
         ]
         [baker.make('Attendance', **p) for p in params]
