@@ -1,6 +1,12 @@
 from rest_framework import serializers
+from rest_framework.fields import MultipleChoiceField
 
-from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
+from lavocat.attendances.models import (
+    Attendance,
+    AttendanceFile,
+    AttendanceStatus,
+    ServicesOffered,
+)
 
 
 class AttendanceFileSerializer(serializers.ModelSerializer):
@@ -17,6 +23,7 @@ class AttendanceFileSerializer(serializers.ModelSerializer):
 class AttendanceSerializer(serializers.ModelSerializer):
     files = AttendanceFileSerializer(many=True, read_only=True)
     status_label = serializers.SerializerMethodField()
+    services_provided = MultipleChoiceField(choices=ServicesOffered.choices)
 
     class Meta:
         model = Attendance
@@ -29,6 +36,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             'status_label',
             'resume',
             'status_resume',
+            'services_provided',
         )
 
     def get_status_label(self, obj):

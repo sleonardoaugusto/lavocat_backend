@@ -22,8 +22,9 @@ requests==2.25.1
 drf-yasg==1.20.0
 sentry-sdk==1.0.0
 drf-nested-routers==0.93.4
+django-multiselectfield==0.1.12
+ipython==8.15.0
 
 # Heroku
 dj-database-url==0.5.0
 dj-static==0.0.6
-

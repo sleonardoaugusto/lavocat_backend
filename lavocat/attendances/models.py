@@ -1,4 +1,5 @@
 from django.db import models
+from multiselectfield import MultiSelectField
 
 from lavocat.attendances.validators import validate_document_id
 from lavocat.core.models import ModelBase
@@ -14,6 +15,24 @@ class AttendanceStatus(models.IntegerChoices):
     DONE = 4, 'Concluído'
 
 
+class ServicesOffered(models.TextChoices):
+    DPVAT = 'DPVAT', 'DPVAT'
+    AUXILIO_DOENCA = 'AUXILIO_DOENCA', 'Auxílio Doença'
+    AUXILIO_ACIDENTE = 'AUXILIO_ACIDENTE', 'Auxílio Acidente'
+    LOAS = 'LOAS', 'LOAS'
+    APOSENTADORIA = 'APOSENTADORIA', 'Aposentadoria'
+    ACAO_CONTRA_CONDUTOR = 'ACAO_CONTRA_CONDUTOR', 'Ação Contra Condutor'
+    ACAO_TRABALHISTA = 'ACAO_TRABALHISTA', 'Ação Trabalhista'
+    ACAO_PREVIDENCIARIA = 'ACAO_PREVIDENCIARIA', 'Ação Previdenciária'
+    SEGURO_DE_VIDA_PROPRIO = 'SEGURO_DE_VIDA_PROPRIO', 'Seguro de Vida Próprio'
+    SEGURO_CONDUTOR = 'SEGURO_CONDUTOR', 'Seguro Condutor'
+    SEGURO_DE_VIDA_EMPRESARIAL = (
+        'SEGURO_DE_VIDA_EMPRESARIAL',
+        'Seguro de Vida Empresarial',
+    )
+    SEGURO_DE_VIDA_NO_BANCO = 'SEGURO_DE_VIDA_NO_BANCO', 'Seguro de Vida no Banco'
+
+
 class Attendance(ModelBase):
     customer_name = models.CharField(max_length=128)
     document_id = models.CharField(
@@ -22,6 +41,12 @@ class Attendance(ModelBase):
     status = models.PositiveSmallIntegerField(choices=AttendanceStatus.choices)
     resume = models.TextField(null=True)
     status_resume = models.TextField(null=True)
+    services_provided = MultiSelectField(
+        null=True,
+        max_length=124,
+        max_choices=len(ServicesOffered.choices),
+        choices=ServicesOffered.choices,
+    )
 
     class Meta:
         ordering = ['-updated_at']
