@@ -22,7 +22,6 @@ class AttendanceFileSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     files = AttendanceFileSerializer(many=True, read_only=True)
-    status_label = serializers.SerializerMethodField()
     services_provided = MultipleChoiceField(
         choices=ServicesOffered.choices, allow_null=True
     )
@@ -35,11 +34,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             'document_id',
             'files',
             'status',
-            'status_label',
             'resume',
             'status_resume',
             'services_provided',
         )
-
-    def get_status_label(self, obj):
-        return AttendanceStatus(obj.status).label

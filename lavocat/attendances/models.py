@@ -38,7 +38,9 @@ class Attendance(ModelBase):
     document_id = models.CharField(
         null=True, blank=True, max_length=11, validators=[validate_document_id]
     )
-    status = models.PositiveSmallIntegerField(choices=AttendanceStatus.choices)
+    status = models.PositiveSmallIntegerField(
+        choices=AttendanceStatus.choices, null=True, default=None
+    )
     resume = models.TextField(null=True)
     status_resume = models.TextField(null=True)
     services_provided = MultiSelectField(
