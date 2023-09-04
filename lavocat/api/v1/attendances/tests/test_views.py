@@ -38,7 +38,6 @@ class TestAttendanceEndpoints:
             'Attendance',
             customer_name='Valeu Natalina',
             document_id=99999999999,
-            status=AttendanceStatus.PENDING_DOCS,
             resume='Resume description',
             status_resume='Status resume description',
         )
@@ -108,8 +107,8 @@ class TestAttendanceFilters:
         assert len(data) == 1
 
     @staticmethod
-    def test_filter_by_attendance_status(attendances, client):
-        qs = f'?status={AttendanceStatus.DONE}&status={AttendanceStatus.PENDING_DOCS}'
+    def test_filter_by_services_types(attendances, client):
+        qs = f'?services_types={ServicesTypesOptions.DPVAT}&services_types={ServicesTypesOptions.AUXILIO_DOENCA}'
         resp = client.get(f"{reverse('api-v1:attendance-list')}{qs}")
         data = resp.json()
         assert len(data) == 2
