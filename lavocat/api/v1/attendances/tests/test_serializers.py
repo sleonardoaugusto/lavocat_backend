@@ -43,6 +43,7 @@ class TestAttendanceSerializer:
             'status',
             'status_label',
             'resume',
+            'services_provided',
             'status_resume',
         }
 

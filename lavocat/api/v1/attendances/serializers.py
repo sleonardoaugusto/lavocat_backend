@@ -23,7 +23,9 @@ class AttendanceFileSerializer(serializers.ModelSerializer):
 class AttendanceSerializer(serializers.ModelSerializer):
     files = AttendanceFileSerializer(many=True, read_only=True)
     status_label = serializers.SerializerMethodField()
-    services_provided = MultipleChoiceField(choices=ServicesOffered.choices)
+    services_provided = MultipleChoiceField(
+        choices=ServicesOffered.choices, allow_null=True
+    )
 
     class Meta:
         model = Attendance
