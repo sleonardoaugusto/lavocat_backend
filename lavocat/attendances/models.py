@@ -21,7 +21,7 @@ class ServicesTypesOptions(models.TextChoices):
     AUXILIO_ACIDENTE = 'AUXILIO_ACIDENTE', 'Auxílio Acidente'
     LOAS = 'LOAS', 'LOAS'
     APOSENTADORIA = 'APOSENTADORIA', 'Aposentadoria'
-    ACAO_CONTRA_CONDUTOR = 'ACAO_CONTRA_CONDUTOR', 'Ação Contra Condutor'
+    ACAO_INDENIZATORIA = 'ACAO_INDENIZATORIA', 'Ação Indenizatória'
     ACAO_TRABALHISTA = 'ACAO_TRABALHISTA', 'Ação Trabalhista'
     ACAO_PREVIDENCIARIA = 'ACAO_PREVIDENCIARIA', 'Ação Previdenciária'
     SEGURO_DE_VIDA_PROPRIO = 'SEGURO_DE_VIDA_PROPRIO', 'Seguro de Vida Próprio'
