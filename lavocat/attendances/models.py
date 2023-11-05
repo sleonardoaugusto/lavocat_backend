@@ -31,6 +31,7 @@ class ServicesTypesOptions(models.TextChoices):
         'Seguro de Vida Empresarial',
     )
     SEGURO_DE_VIDA_NO_BANCO = 'SEGURO_DE_VIDA_NO_BANCO', 'Seguro de Vida no Banco'
+    PENSAO_POR_MORTE = 'PENSAO_POR_MORTE', 'Pensão por Morte'
 
 
 class Attendance(ModelBase):
