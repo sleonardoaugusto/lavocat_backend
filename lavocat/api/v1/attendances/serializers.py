@@ -31,6 +31,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'customer_name',
+            'source',
             'document_id',
             'files',
             'resume',

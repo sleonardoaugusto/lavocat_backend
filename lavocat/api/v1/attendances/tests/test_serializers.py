@@ -6,7 +6,7 @@ from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
     AttendanceFileSerializer,
 )
-from lavocat.attendances.models import AttendanceStatus, AttendanceFile
+from lavocat.attendances.models import AttendanceFile
 from lavocat.custom_assertions import assert_validation_error_code
 
 
@@ -38,6 +38,7 @@ class TestAttendanceSerializer:
         assert set(data.keys()) == {
             'id',
             'customer_name',
+            'source',
             'document_id',
             'files',
             'resume',

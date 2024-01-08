@@ -39,6 +39,7 @@ class Attendance(ModelBase):
     document_id = models.CharField(
         null=True, blank=True, max_length=11, validators=[validate_document_id]
     )
+    source = models.CharField(max_length=128)
     status = models.PositiveSmallIntegerField(
         choices=AttendanceStatus.choices, null=True, blank=True
     )

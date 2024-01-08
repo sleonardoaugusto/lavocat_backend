@@ -11,7 +11,6 @@ from lavocat.api.v1.attendances.serializers import (
 from lavocat.attendances.models import (
     Attendance,
     AttendanceFile,
-    AttendanceStatus,
     ServicesTypesOptions,
 )
 
@@ -24,6 +23,7 @@ class TestAttendanceEndpoints:
         assert resp.status_code, status.HTTP_200_OK
         assert set(resp.json()[0]) == {
             'customer_name',
+            'source',
             'document_id',
             'files',
             'id',
@@ -36,7 +36,6 @@ class TestAttendanceEndpoints:
     def test_post_attendance(client):
         attendance = baker.prepare(
             'Attendance',
-            customer_name='Valeu Natalina',
             document_id=99999999999,
             resume='Resume description',
             status_resume='Status resume description',
@@ -51,6 +50,7 @@ class TestAttendanceEndpoints:
         assert response.status_code == status.HTTP_201_CREATED
         assert set(response.json()) == {
             'customer_name',
+            'source',
             'document_id',
             'files',
             'id',
