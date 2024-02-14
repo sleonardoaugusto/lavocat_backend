@@ -6,8 +6,14 @@ from lavocat.api.v1.attendances.filters import AttendanceFilter
 from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
     AttendanceFileSerializer,
+    NoteSerializer,
 )
-from lavocat.attendances.models import Attendance, AttendanceFile, AttendanceStatus
+from lavocat.attendances.models import (
+    Attendance,
+    AttendanceFile,
+    AttendanceStatus,
+    Note,
+)
 
 
 class BaseNestedRouteViewSet(viewsets.ModelViewSet):
@@ -32,6 +38,12 @@ class AttendanceFileViewSet(viewsets.ModelViewSet):
 class NestedAttendanceFileViewSet(BaseNestedRouteViewSet):
     queryset = AttendanceFile.objects.all()
     serializer_class = AttendanceFileSerializer
+    nested_lookup = 'attendance_pk'
+
+
+class NestedNoteViewSet(BaseNestedRouteViewSet):
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer
     nested_lookup = 'attendance_pk'
 
 

@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 from django.core.files import File
+from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from faker import Faker
 from model_bakery import baker
@@ -49,3 +50,19 @@ def faker():
 @pytest.fixture
 def file():
     return SimpleUploadedFile('file.txt', b'hi there', content_type='application/pdf')
+
+
+@pytest.fixture
+def attendance():
+    return baker.make('Attendance', _fill_optional=True)
+
+
+@pytest.fixture
+def attendance_file(attendance, delete_file):
+    AttendanceFile.file.field.storage = FileSystemStorage()
+    yield baker.make('AttendanceFile', _create_files=True, attendance=attendance)
+
+
+@pytest.fixture
+def note(attendance):
+    return baker.make("Note", _fill_optional=True, attendance=attendance)

@@ -7,6 +7,7 @@ from lavocat.api.v1.attendances.views import (
     AttendanceFileViewSet,
     AttendanceStatusesView,
     NestedAttendanceFileViewSet,
+    NestedNoteViewSet,
 )
 
 router = SimpleRouter()
@@ -15,12 +16,19 @@ router.register('attendance-files', AttendanceFileViewSet)
 
 
 attendance_router = routers.NestedSimpleRouter(
-    router, 'attendances', lookup='attendance'
+    router,
+    'attendances',
+    lookup='attendance',
 )
 attendance_router.register(
     'attendance-files',
     NestedAttendanceFileViewSet,
     basename='attendance-attendance-file',
+)
+attendance_router.register(
+    'notes',
+    NestedNoteViewSet,
+    basename='attendance-note',
 )
 
 urlpatterns = [

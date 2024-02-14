@@ -5,13 +5,11 @@ from model_bakery import baker
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from lavocat.api.v1.attendances.serializers import (
-    AttendanceSerializer,
-)
 from lavocat.attendances.models import (
     Attendance,
     AttendanceFile,
     ServicesTypesOptions,
+    Note,
 )
 
 
@@ -34,19 +32,24 @@ class TestAttendanceEndpoints:
 
     @staticmethod
     def test_post_attendance(client):
-        attendance = baker.prepare(
-            'Attendance',
-            document_id=99999999999,
-            resume='Resume description',
-            status_resume='Status resume description',
-        )
-        payload = AttendanceSerializer(attendance).data
+        payload = {
+            'document_id': 99999999999,
+            'customer_name': 'Samuel',
+            'source': 'Somewhere',
+            'resume': 'Resume description',
+            'status_resume': 'Status resume description',
+            'services_types': [
+                ServicesTypesOptions.DPVAT.value,
+                ServicesTypesOptions.AUXILIO_DOENCA.value,
+            ],
+        }
         response = client.post(
             reverse('api-v1:attendance-list'),
             json.dumps(payload),
             content_type='application/json',
         )
         assert Attendance.objects.all().count() == 1
+        assert Note.objects.all().count() == 2
         assert response.status_code == status.HTTP_201_CREATED
         assert set(response.json()) == {
             'customer_name',
@@ -131,12 +134,7 @@ class TestAttendanceFileEndpoint:
         assert attendance_file.filename == 'file.txt'
 
     @staticmethod
-    def test_update_filename(client, delete_file, file):
-        attendance_file = baker.make(
-            'AttendanceFile',
-            file=file,
-            attendance=baker.make('Attendance', _fill_optional=True),
-        )
+    def test_update_filename(client, delete_file, attendance_file):
         resp = client.patch(
             reverse('api-v1:attendancefile-detail', args=[attendance_file.pk]),
             data={"filename": "new-name.pdf"},
@@ -157,10 +155,9 @@ def test_get_attendance_statuses(client):
     }
 
 
-class TestAttendanceFilesNestedView:
+class TestAttendanceFilesNestedEndpoints:
     @staticmethod
-    def test_list_attendance_files_by_application(client):
-        attendance_file = baker.make('AttendanceFile')
+    def test_list_attendance_files_by_application(client, attendance_file):
         baker.make("AttendanceFile")
         url = reverse(
             'api-v1:attendance-attendance-file-list',
@@ -174,4 +171,21 @@ class TestAttendanceFilesNestedView:
             'file',
             'id',
             'filename',
+        }
+
+
+class TestAttendanceNoteNestedEndpoints:
+    @staticmethod
+    def test_list_attendance_notes(client, note):
+        url = reverse(
+            'api-v1:attendance-note-list',
+            kwargs={'attendance_pk': note.attendance.pk},
+        )
+        resp = client.get(url)
+        assert resp.status_code == status.HTTP_200_OK
+        assert len(resp.json()) == 1
+        assert set(resp.json()[0]) == {
+            'id',
+            'header',
+            'content',
         }

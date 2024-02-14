@@ -1,24 +1,11 @@
 import pytest
-from django.core.files.storage import FileSystemStorage
-from model_bakery import baker
 
 from lavocat.api.v1.attendances.serializers import (
     AttendanceSerializer,
     AttendanceFileSerializer,
+    NoteSerializer,
 )
-from lavocat.attendances.models import AttendanceFile
 from lavocat.custom_assertions import assert_validation_error_code
-
-
-@pytest.fixture
-def attendance():
-    return baker.make('Attendance', _fill_optional=True)
-
-
-@pytest.fixture
-def attendance_file(attendance, delete_file):
-    AttendanceFile.file.field.storage = FileSystemStorage()
-    yield baker.make('AttendanceFile', _create_files=True, attendance=attendance)
 
 
 @pytest.fixture
@@ -29,6 +16,11 @@ def attendance_serializer(attendance_file):
 @pytest.fixture
 def attendance_file_serializer(attendance_file):
     return AttendanceFileSerializer(attendance_file)
+
+
+@pytest.fixture
+def note_serializer(note):
+    return NoteSerializer(note)
 
 
 class TestAttendanceSerializer:
@@ -84,3 +76,15 @@ class TestAttendanceFileSerializer:
             == f'/mediafiles/{attendance_file.file.name}'
         )
         assert attendance_file_serializer.data['filename'] == attendance_file.filename
+
+
+class TestNoteSerializer:
+    @staticmethod
+    def test_fields_note_serializer(note_serializer):
+        assert set(note_serializer.data.keys()) == {'content', 'header', 'id'}
+
+    @staticmethod
+    def test_values_note_file_serializer(note, note_serializer):
+        assert note_serializer.data['content'] == note.content
+        assert note_serializer.data['header'] == note.header
+        assert note_serializer.data['id'] == note.pk

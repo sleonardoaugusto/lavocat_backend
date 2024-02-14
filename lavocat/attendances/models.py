@@ -69,3 +69,11 @@ class AttendanceFile(ModelBase):
     )
     file = models.FileField(null=False, upload_to=upload_to, storage=MediaStorage())
     filename = models.CharField(null=False, max_length=124)
+
+
+class Note(ModelBase):
+    attendance = models.ForeignKey(
+        Attendance, on_delete=models.CASCADE, related_name='notes'
+    )
+    header = models.CharField(max_length=124)
+    content = models.TextField(null=True, blank=True)
