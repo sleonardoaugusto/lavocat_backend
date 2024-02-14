@@ -1,9 +1,7 @@
 from pathlib import Path
-from time import time
-from unittest import mock
+from typing import List, Generator
 
 import pytest
-from django.core.files import File
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from faker import Faker
@@ -11,7 +9,7 @@ from model_bakery import baker
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from lavocat.attendances.models import AttendanceFile
+from lavocat.attendances.models import AttendanceFile, Attendance, Note
 
 
 @pytest.fixture(autouse=True)
@@ -53,16 +51,18 @@ def file():
 
 
 @pytest.fixture
-def attendance():
-    return baker.make('Attendance', _fill_optional=True)
+def attendance() -> Attendance:
+    return baker.make('Attendance', deleted_at=None, _fill_optional=True)
 
 
 @pytest.fixture
-def attendance_file(attendance, delete_file):
+def attendance_file(attendance, delete_file) -> AttendanceFile:
     AttendanceFile.file.field.storage = FileSystemStorage()
     yield baker.make('AttendanceFile', _create_files=True, attendance=attendance)
 
 
 @pytest.fixture
-def note(attendance):
-    return baker.make("Note", _fill_optional=True, attendance=attendance)
+def note(attendance) -> Note:
+    return baker.make(
+        "Note", attendance=attendance, deleted_at=None, _fill_optional=True
+    )

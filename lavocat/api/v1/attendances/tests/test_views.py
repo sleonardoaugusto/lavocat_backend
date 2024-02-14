@@ -189,3 +189,20 @@ class TestAttendanceNoteNestedEndpoints:
             'header',
             'content',
         }
+
+    @staticmethod
+    def test_patch_attendance_note(client, note):
+        url = reverse(
+            'api-v1:attendance-note-detail',
+            kwargs={'attendance_pk': note.attendance.pk, 'pk': note.pk},
+        )
+        data = json.dumps({'content': 'New text!'})
+        resp = client.patch(url, data, content_type='application/json')
+        note.refresh_from_db()
+        assert note.content == 'New text!'
+        assert resp.status_code == status.HTTP_200_OK
+        assert set(resp.json()) == {
+            'id',
+            'header',
+            'content',
+        }
