@@ -3,17 +3,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models.fields.files import FieldFile
 from model_bakery import baker
 
-from lavocat.attendances.models import Attendance, AttendanceStatus, AttendanceFile
-
-
-@pytest.fixture
-def attendance():
-    return baker.make(
-        'Attendance',
-        customer_name='Natalino Dingoubel',
-        document_id=45009877899,
-        status=AttendanceStatus.PENDING_DOCS,
-    )
+from lavocat.attendances.models import Attendance, AttendanceFile
 
 
 def test_should_exist_attendance_model(attendance):

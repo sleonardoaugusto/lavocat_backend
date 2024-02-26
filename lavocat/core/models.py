@@ -2,9 +2,21 @@ from django.db import models
 from django.utils import timezone
 
 
+class SoftDeletableQuerySet(models.query.QuerySet):
+    def delete(self, soft=True):
+        if soft:
+            updated_count = self.update(deleted_at=timezone.now())
+            return updated_count, {self.model._meta.label: updated_count}
+        else:
+            return super().delete()
+
+
 class SoftDeleteManager(models.Manager):
+    _queryset_class = SoftDeletableQuerySet
+
     def get_queryset(self):
-        return super().get_queryset().filter(deleted_at__isnull=True)
+        qs = super().get_queryset()
+        return qs.filter(deleted_at=None)
 
 
 class SoftDeleteModel(models.Model):

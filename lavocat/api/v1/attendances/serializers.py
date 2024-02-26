@@ -46,6 +46,23 @@ class AttendanceSerializer(serializers.ModelSerializer):
             Note.objects.create(attendance=instance, header=label)
         return instance
 
+    def update(self, instance, validated_data):
+        current_services = [
+            ServicesTypesOptions(service).label for service in instance.services_types
+        ]
+        new_services = [
+            ServicesTypesOptions(service).label
+            for service in validated_data['services_types']
+        ]
+        to_create = set(new_services) - set(current_services)
+        to_delete = set(current_services) - set(new_services)
+        Note.objects.filter(attendance=instance, header__in=to_delete).delete()
+        Note.objects.bulk_create(
+            [Note(attendance=instance, header=service) for service in to_create]
+        )
+        instance = super().update(instance, validated_data)
+        return instance
+
 
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:

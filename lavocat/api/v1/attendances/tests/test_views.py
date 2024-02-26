@@ -1,6 +1,5 @@
 import json
 
-import pytest
 from model_bakery import baker
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -63,6 +62,48 @@ class TestAttendanceEndpoints:
         }
 
     @staticmethod
+    def test_patch_attendance(client, attendance, note_dpvat, note_auxilio_doenca):
+        """Should remove notes based on services_types"""
+        payload = {
+            'document_id': 99999999999,
+            'customer_name': 'Samuel',
+            'source': 'Somewhere',
+            'resume': 'Resume description',
+            'status_resume': 'Status resume description',
+            'services_types': [
+                ServicesTypesOptions.DPVAT.value,
+                ServicesTypesOptions.AUXILIO_ACIDENTE.value,
+            ],
+        }
+        response = client.patch(
+            reverse(
+                'api-v1:attendance-detail',
+                args=[attendance.pk],
+            ),
+            data=json.dumps(payload),
+            content_type='application/json',
+        )
+        assert Attendance.objects.all().count() == 1
+        assert (
+            Note.all_objects.filter(
+                attendance=attendance, deleted_at__isnull=False
+            ).count()
+            == 1
+        )
+        assert Note.objects.all().count() == 2
+        assert response.status_code == status.HTTP_200_OK
+        assert set(response.json()) == {
+            'customer_name',
+            'source',
+            'document_id',
+            'files',
+            'id',
+            'resume',
+            'services_types',
+            'status_resume',
+        }
+
+    @staticmethod
     def test_delete_attendance(client):
         attendance_file = baker.make('AttendanceFile')
         resp = client.delete(
@@ -73,28 +114,6 @@ class TestAttendanceEndpoints:
 
 
 class TestAttendanceFilters:
-    @staticmethod
-    @pytest.fixture
-    def attendances():
-        params = [
-            dict(
-                customer_name='Maria',
-                document_id='99999999999',
-                services_types=ServicesTypesOptions.DPVAT,
-            ),
-            dict(
-                customer_name='Mara',
-                document_id='11199999999',
-                services_types=ServicesTypesOptions.AUXILIO_DOENCA,
-            ),
-            dict(
-                customer_name='Faria',
-                document_id='11999999999',
-                services_types=ServicesTypesOptions.AUXILIO_ACIDENTE,
-            ),
-        ]
-        [baker.make('Attendance', **p) for p in params]
-
     @staticmethod
     def test_filter_by_attendance_name(attendances, client):
         qs = '?customer_name=ara'
