@@ -27,6 +27,7 @@ class TestAttendanceEndpoints:
             'resume',
             'services_types',
             'status_resume',
+            'created_at',
         }
 
     @staticmethod
@@ -59,6 +60,7 @@ class TestAttendanceEndpoints:
             'resume',
             'services_types',
             'status_resume',
+            'created_at',
         }
 
     @staticmethod
@@ -101,6 +103,7 @@ class TestAttendanceEndpoints:
             'resume',
             'services_types',
             'status_resume',
+            'created_at',
         }
 
     @staticmethod
