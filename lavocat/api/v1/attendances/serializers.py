@@ -37,6 +37,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             'resume',
             'status_resume',
             'services_types',
+            'created_at',
         )
 
     def create(self, validated_data):
