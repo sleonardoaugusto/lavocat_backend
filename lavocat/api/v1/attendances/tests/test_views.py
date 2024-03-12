@@ -27,6 +27,7 @@ class TestAttendanceEndpoints:
             'resume',
             'services_types',
             'status_resume',
+            'is_client',
             'created_at',
         }
 
@@ -60,6 +61,7 @@ class TestAttendanceEndpoints:
             'resume',
             'services_types',
             'status_resume',
+            'is_client',
             'created_at',
         }
 
@@ -103,6 +105,7 @@ class TestAttendanceEndpoints:
             'resume',
             'services_types',
             'status_resume',
+            'is_client',
             'created_at',
         }
 

@@ -51,6 +51,7 @@ class Attendance(ModelBase):
         max_choices=len(ServicesTypesOptions.choices),
         choices=ServicesTypesOptions.choices,
     )
+    is_client = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-updated_at']

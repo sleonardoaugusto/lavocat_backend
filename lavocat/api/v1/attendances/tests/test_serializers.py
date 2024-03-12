@@ -36,6 +36,7 @@ class TestAttendanceSerializer:
             'resume',
             'services_types',
             'status_resume',
+            'is_client',
             'created_at',
         }
 

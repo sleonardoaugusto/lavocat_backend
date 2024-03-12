@@ -37,6 +37,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             'resume',
             'status_resume',
             'services_types',
+            'is_client',
             'created_at',
         )
 
