@@ -10,8 +10,9 @@ jobs:
         with:
           python-version: '3.9.0'
       - name: Install Dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r ./backend/requirements.txt
       - name: Run Tests
+        working-directory: ./backend
         env:
           SECRET_KEY: 'secret'
           ALLOWED_HOSTS: 'localhost'
