@@ -15,7 +15,7 @@ A lawyer system.
 
 ```console
 git clone git@github.com:sleonardoaugusto/lavocat_backend.git
-cd lavocat/backend/
+cd lavocat_backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
