@@ -77,8 +77,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
+FIVE_DAYS = timedelta(days=5)
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=10),
+    'ACCESS_TOKEN_LIFETIME': FIVE_DAYS,
 }
 
 ROOT_URLCONF = 'lavocat.urls'
