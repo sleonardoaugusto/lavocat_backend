@@ -1,3 +1,4 @@
+from django.utils.datetime_safe import datetime
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, views
 from rest_framework.response import Response
@@ -28,6 +29,12 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = AttendanceSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = AttendanceFilter
+
+    def get_queryset(self):
+        if not self.request.user.is_superuser:
+            date = datetime(year=2024, month=5, day=23)
+            return super().get_queryset().filter(created_at__lte=date)
+        return super().get_queryset()
 
 
 class AttendanceFileViewSet(viewsets.ModelViewSet):

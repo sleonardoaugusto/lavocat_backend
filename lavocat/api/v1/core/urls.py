@@ -1,7 +1,7 @@
 from django.urls import path
-from rest_framework_simplejwt import views as jwt_views
 
+from lavocat.api.v1.core.views import TokenObtainPairView
 
 urlpatterns = [
-    path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='jwt-auth'),
+    path('api/token/', TokenObtainPairView.as_view(), name='jwt-auth'),
 ]

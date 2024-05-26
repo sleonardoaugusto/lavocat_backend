@@ -22,7 +22,7 @@ def client_unauthenticated():
 
 @pytest.fixture
 def client():
-    user = baker.make('User')
+    user = baker.make('User', is_superuser=True)
     token = RefreshToken.for_user(user)
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.access_token}')
