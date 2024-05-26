@@ -78,7 +78,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-FIVE_DAYS = timedelta(days=5)
+FIVE_DAYS = timedelta(days=1)
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': FIVE_DAYS,
 }
