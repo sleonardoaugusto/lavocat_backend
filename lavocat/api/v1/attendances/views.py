@@ -31,10 +31,10 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     filterset_class = AttendanceFilter
 
     def get_queryset(self):
+        date = datetime(year=2024, month=5, day=23)
         if not self.request.user.is_superuser:
-            date = datetime(year=2024, month=5, day=23)
             return super().get_queryset().filter(created_at__lte=date)
-        return super().get_queryset()
+        return super().get_queryset().filter(created_at__gte=date)
 
 
 class AttendanceFileViewSet(viewsets.ModelViewSet):
