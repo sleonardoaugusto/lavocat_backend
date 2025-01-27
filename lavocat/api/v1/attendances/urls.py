@@ -21,9 +21,9 @@ attendance_router = routers.NestedSimpleRouter(
     lookup='attendance',
 )
 attendance_router.register(
-    'attendance-files',
+    'documents',
     NestedAttendanceFileViewSet,
-    basename='attendance-attendance-file',
+    basename='attendance-document',
 )
 attendance_router.register(
     'notes',

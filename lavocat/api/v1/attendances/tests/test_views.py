@@ -185,7 +185,7 @@ class TestAttendanceFilesNestedEndpoints:
     def test_list_attendance_files_by_application(client, attendance_file):
         baker.make("AttendanceFile")
         url = reverse(
-            'api-v1:attendance-attendance-file-list',
+            'api-v1:attendance-document-list',
             kwargs={'attendance_pk': attendance_file.attendance.pk},
         )
         resp = client.get(url)
