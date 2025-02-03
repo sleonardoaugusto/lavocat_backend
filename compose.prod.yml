@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend:
+    container_name: backend
+    image: backend:prod               # Tagged production image
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod     # Use the production Dockerfile
+    depends_on:
+      - db
+    command: gunicorn projectname.wsgi:application --bind 0.0.0.0:8000  # Production WSGI server
+    environment:
+      - DJANGO_SETTINGS_MODULE=projectname.settings.production         # Use production settings
+    ports:
+      - 8000:8000
+    env_file:
+      - backend/.env                 # Environment variables for production
+
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: lavocat
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  frontend:
+    container_name: frontend
+    image: frontend:prod              # Tagged production image
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod     # Use the production Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    command: npm run start            # Run Next.js in production mode
+
+volumes:
+  postgres_data:
